@@ -7,6 +7,7 @@ import lejos.nxt.UltrasonicSensor;
 
 public class daisy 
 {
+	//test213423423523452345
 	static double RADDURCHMESSER = 5.6;
 	static double RADABSTAND = 14;
 
