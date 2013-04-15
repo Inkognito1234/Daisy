@@ -4,7 +4,7 @@ import lejos.robotics.RegulatedMotor;
 
 public class OwnPilot 
 {
-	//Test123444444
+	//Test
 	// Roboterkonfiguration
 	public double wheelDiameter; // Raddurchmesser
 	public double trackWidth; // Radabstand
