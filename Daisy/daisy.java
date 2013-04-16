@@ -10,7 +10,7 @@ public class daisy
 	
 	static double RADDURCHMESSER = 5.6;
 	static double RADABSTAND = 14;
-	
+	//huhu
 	// Pull is the man
 
 	// Konfiguration des Piloten
