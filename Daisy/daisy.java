@@ -9,9 +9,10 @@ public class daisy
 {
 	
 	static double RADDURCHMESSER = 5.6;
+
 	static double RADABSTAND = 11.5;
-	
-	// Pull is the man
+
+
 
 	// Konfiguration des Piloten
 	public static DifferentialPilot pilot = new DifferentialPilot(RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A) ;  //(Motor.B, Motor.A , RADDURCHMESSER, RADABSTAND);
