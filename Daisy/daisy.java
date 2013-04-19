@@ -1,36 +1,47 @@
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
-import lejos.nxt.TouchSensor;
 import lejos.nxt.UltrasonicSensor;
-
+import lejos.robotics.navigation.DifferentialPilot;
+import  lejos.robotics.RegulatedMotor;
 
 
 public class daisy 
 {
 	
 	static double RADDURCHMESSER = 5.6;
-	static double RADABSTAND = 14;
+	static double RADABSTAND = 11.5;
 	
 	// Pull is the man
 
 	// Konfiguration des Piloten
-	public static OwnPilot pilot = new OwnPilot(Motor.B, Motor.A , RADDURCHMESSER, RADABSTAND);
+	public static DifferentialPilot pilot = new DifferentialPilot(RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A) ;  //(Motor.B, Motor.A , RADDURCHMESSER, RADABSTAND);
 	//Ultraschall Sensor auf Port 1
 	public static UltrasonicSensor sonicSensor = new UltrasonicSensor( SensorPort.S1);
-	//Drucksensor auf Port 4
-	public static TouchSensor touchSensor = new TouchSensor (SensorPort.S4);
+	public static RegulatedMotor middleMotor = Motor.C;
+
+	
+	
 	public static void main(String[] args) 
 	{
-		while (!touchSensor.isPressed())
+		//INIT
+		pilot.setRotateSpeed( 450 );	
+		pilot.setTravelSpeed( 50);		// 50cm/s
+		middleMotor.setSpeed(150);
+		
+		while (true)
 		{
-			while (sonicSensor.getDistance() >= 22 )
+			pilot.forward();
+			
+			while (sonicSensor.getDistance() >= 29 )
 			{
-				if(touchSensor.isPressed()) break;
-				pilot.drive(0.25, 0);
+				
 //				System.out.println( "Distanz:\n" + sonicSensor.getDistance() );
 			}
 			pilot.stop();
-			pilot.driveDistance(0, 1, Math.PI * RADDURCHMESSER / 2 , false);  // 1/2 Radumdrehung => 90 Grad auf der Stelle
+			middleMotor.rotate(35);
+			pilot.rotate(90);
+			middleMotor.rotate(-35);
+			
 		}
 	}
 
