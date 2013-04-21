@@ -38,8 +38,13 @@ public class Initialize {
 	public final File sound1 = new File("sound1.wav");
 	
 	//Variablen zum initialisieren
-	double driveSpeed=25, spinSpeed=450 ;
+	double driveSpeed=25, spinSpeed=450 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
 	int volume=100, grabSpeed=150;
+	int blockadeNachVersuchen = 15;		// Hier Zahl einsetzen die bestimmt wie oft checkRise() ausgeführt wird, 
+										// bis es als Blockade und nicht als Steigung interpretiert wird
+	double riseTreshold = 0.9;			// bestimmt ab wann checkRise die Geschwindigkeit erhöht (Werte < 1); 
+										// 0.9 = unter 90% der eigentlichen Geschw. wird beschleunigt.
+	double risePowerUp = 1.2;			// gibt an um wie viel checkRise die Geschw. erhöht (werte > 1)
 	
 	//schaut ob File zuende gespielt wurde um neu zu starten (Endlos/Weiderholschleife)
 	public void checkSound()

@@ -11,7 +11,6 @@ public class daisy
 		
 		while (true)
 		{
-
 			daisy.pilot.forward();
 			motors.checkRise();
 			
