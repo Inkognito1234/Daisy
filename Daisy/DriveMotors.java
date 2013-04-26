@@ -43,7 +43,7 @@ public class DriveMotors {
 	* @return2	 Wert=-1: ist eine Blockade, da Anzahl an Aufrufen erreicht
 	* @return3	 Wert= 1: Steigung bewältigt, alles wieder auf Anfang
 	* @return4 	 Wert= 2: Weiterhin auf Steigung; keine weitere Erhöhung der Geschw.
-	* @return5	 Wert= 3: (weiterhin) Steigung mit Erhöhung der Geschw.
+	* @return5	 Wert= 3: (weiterhin) Steigung mit Erhöhung der Geschw. 
 	* 
 	*/
 	public int checkRise()
