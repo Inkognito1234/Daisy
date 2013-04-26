@@ -38,7 +38,7 @@ public class Initialize {
 	public final File sound1 = new File("sound1.wav");
 	
 	//Variablen zum initialisieren
-	double driveSpeed=25, spinSpeed=450 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
+	double driveSpeed=20, spinSpeed=350 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
 	int volume=100, grabSpeed=150;
 	int blockadeNachVersuchen = 15;		// Hier Zahl einsetzen die bestimmt wie oft checkRise() ausgeführt wird, 
 										// bis es als Blockade und nicht als Steigung interpretiert wird
@@ -58,12 +58,13 @@ public class Initialize {
 		
 		Sound.playSample(sound1, volume);	// spielt File ab mit max Lautstaerke
 		
+		middleMotor.stop();
 		pilot.setRotateSpeed( spinSpeed );	// Grad/s (Roboterdrehung)
 		pilot.setTravelSpeed( driveSpeed);	// cm/s
 		middleMotor.setSpeed( grabSpeed);	// Grad/s (Motordrehung/-leistung)
-		sensorFront.setFloodlight(true);	// ? :-)
-		sensorLeft.setFloodlight(true);
-		sensorRight.setFloodlight(true);
+		sensorFront.setFloodlight(false);	// ? :-)
+		sensorLeft.setFloodlight(false);
+		sensorRight.setFloodlight(false);
 	}
 		
 }

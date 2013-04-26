@@ -43,14 +43,15 @@ public class DriveMotors {
 	* @return2	 Wert=-1: ist eine Blockade, da Anzahl an Aufrufen erreicht
 	* @return3	 Wert= 1: Steigung bewältigt, alles wieder auf Anfang
 	* @return4 	 Wert= 2: Weiterhin auf Steigung; keine weitere Erhöhung der Geschw.
+	* @return5	 Wert= 3: (weiterhin) Steigung mit Erhöhung der Geschw.
 	* 
 	*/
 	public int checkRise()
 	{
 
-		if( newSpeed * Math.min(daisy.daisy.riseTreshold, 0.99) > this.getSpeed() ) 
+		if( newSpeed * Math.min(daisy.daisy.riseTreshold, 0.999) > this.getSpeed() ) 
 		{	
-			newSpeed =  Math.min(  newSpeed * Math.max(daisy.daisy.risePowerUp, 1.01), 50);  //erhöht die Geschw. , aber nicht höher als 50
+			newSpeed =  Math.min(  newSpeed * Math.max(daisy.daisy.risePowerUp, 1.01), 43);  //erhöht die Geschw. , aber nicht höher als 43
 			daisy.daisy.pilot.setTravelSpeed(newSpeed);
 			poweredUp = true;
 			
@@ -63,9 +64,10 @@ public class DriveMotors {
 				poweredUp = false;
 				return -1;
 			}
+			return 3;	// (weiterhin) Steigung, aber mit Erhöhung der Geschw.
 			
 		}
-		else if(daisy.daisy.pilot.getTravelSpeed() != oldSpeed && this.getSpeed() > oldSpeed) 
+		else if(daisy.daisy.pilot.getTravelSpeed() != oldSpeed && this.getSpeed() > oldSpeed * daisy.daisy.riseTreshold) 
 			 {
 				 daisy.daisy.pilot.setTravelSpeed(oldSpeed);
 				 newSpeed = oldSpeed;
@@ -73,7 +75,19 @@ public class DriveMotors {
 				 poweredUp = false;
 				 return 1;
 			 } 
-		if(poweredUp) return 2;
+		if(poweredUp) 
+			{
+				counter++;
+				if(counter >= daisy.daisy.blockadeNachVersuchen)
+				{
+					daisy.daisy.pilot.setTravelSpeed(oldSpeed);
+					newSpeed = oldSpeed;
+					counter = 0;
+					poweredUp = false;
+					return -1;
+				}
+				else return 2;
+			}
 		else return 0;
 				
 	}
