@@ -16,7 +16,7 @@ public class Initialize
 	//Konstanten
 	public final double RADDURCHMESSER = 5.6;
 	public final double RADABSTAND = 11.5;
-	public final int BALLDURCHMESSER = 7;
+	public final double BALLDURCHMESSER = 7;
 	
 	//Piloten definieren
 	
@@ -45,9 +45,9 @@ public class Initialize
 
 	public final double spinSpeed=350;
 	static int volume=100, grabSpeed=150;
-	int blockadeNachVersuchen = 15;		// Hier Zahl einsetzen die bestimmt wie oft checkRise() ausgeführt wird, 
+	int blockadeNachVersuchen = 7;		// Hier Zahl einsetzen die bestimmt wie oft checkRise() ausgeführt wird, 
 										// bis es als Blockade und nicht als Steigung interpretiert wird
-	double riseTreshold = 0.9;			// bestimmt ab wann checkRise die Geschwindigkeit erhöht (Werte < 1); 
+	double riseTreshold = 0.97;			// bestimmt ab wann checkRise die Geschwindigkeit erhöht (Werte < 1); 
 										// 0.9 = unter 90% der eigentlichen Geschw. wird beschleunigt.
 	double risePowerUp = 1.2;			// gibt an um wie viel checkRise die Geschw. erhöht (werte > 1)
 	
