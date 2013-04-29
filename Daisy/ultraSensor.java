@@ -1,9 +1,9 @@
-/*//import lejos.nxt.I2CPort;
+///import lejos.nxt.I2CPort;
 import lejos.nxt.SensorConstants;
 //import lejos.nxt.UltrasonicSensor;
 
 
-public class ultraSensor{// extends UltrasonicSensor {
+public class ultraSensor{
 
 	//public ultraSensor(I2CPort port) 
 	//{
@@ -20,8 +20,8 @@ public class ultraSensor{// extends UltrasonicSensor {
 		
 		double[] distanzen={-1};
 		
-		daisy.daisyInit.sonicSensor.ping();
-		count = daisy.daisyInit.sonicSensor.getDistances(dist);
+		Daisy.daisyInit.sonicSensor.ping();
+		count = Daisy.daisyInit.sonicSensor.getDistances(dist);
 		for(int i=0; i < count; i++)
 		{
 			sum = sum + dist[i];
@@ -31,36 +31,36 @@ public class ultraSensor{// extends UltrasonicSensor {
 		if( durchschnitt > lastDist+10) 
 			{
 				distanzen[1] = durchschnitt;
-				daisy.daisyInit.sonicSensor.continuous();
+				Daisy.daisyInit.sonicSensor.continuous();
 				return distanzen; //Messung lastDist war falsch -> kein Objekt in der Nähe -> [0] und [2] = -1
 			}
 		else
 		{
-			Initialize.pilot.rotate(Math.tan(durchschnitt/daisy.daisyInit.BALLDURCHMESSER)); //Drehung um BALLDURCHMESSER nach links
-			daisy.daisyInit.sonicSensor.ping();
-			count = daisy.daisyInit.sonicSensor.getDistances(dist);
+			Daisy.daisyInit.pilot.rotate(Math.tan(durchschnitt/Daisy.daisyInit.BALLDURCHMESSER)); //Drehung um BALLDURCHMESSER nach links
+			Daisy.daisyInit.sonicSensor.ping();
+			count = Daisy.daisyInit.sonicSensor.getDistances(dist);
 			for(int i=0; i < count; i++)
 			{
 				sum = sum + dist[i];
 			}
 			checkLeft = sum / count;
 			
-			Initialize.pilot.rotate( -2* Math.tan(durchschnitt/daisy.daisyInit.BALLDURCHMESSER)); //Drehung um 2* BALLDURCHMESSER nach rechts
+			Daisy.daisyInit.pilot.rotate( -2* Math.tan(durchschnitt/Daisy.daisyInit.BALLDURCHMESSER)); //Drehung um 2* BALLDURCHMESSER nach rechts
 			
-			daisy.daisyInit.sonicSensor.ping();
-			count = daisy.daisyInit.sonicSensor.getDistances(dist);
+			Daisy.daisyInit.sonicSensor.ping();
+			count = Daisy.daisyInit.sonicSensor.getDistances(dist);
 			for(int i=0; i < count; i++)
 			{
 				sum = sum + dist[i];
 			}
 			checkRight = sum / count;
 			
-			Initialize.pilot.rotate(Math.tan(durchschnitt/daisy.daisyInit.BALLDURCHMESSER)); //Drehung um BALLDURCHMESSER nach links um wieder Objekt anzuschauen
+			Daisy.daisyInit.pilot.rotate(Math.tan(durchschnitt/Daisy.daisyInit.BALLDURCHMESSER)); //Drehung um BALLDURCHMESSER nach links um wieder Objekt anzuschauen
 
 			distanzen[0]=checkLeft;
 			distanzen[1]=durchschnitt;
 			distanzen[2]=checkRight;
-			daisy.daisyInit.sonicSensor.continuous();
+			Daisy.daisyInit.sonicSensor.continuous();
 			
 			return distanzen; 
 
@@ -84,14 +84,14 @@ public class ultraSensor{// extends UltrasonicSensor {
 	public boolean isBall(double [] distanzen)
 	{
 		
-		Initialize.pilot.setTravelSpeed(15);
-		daisy.daisyInit.middleMotor.rotate(40);
-		Initialize.pilot.travel(distanzen[1] -2);
-		if(Initialize.sensorFront.getColorID() == SensorConstants.GREEN) return true;
+		Daisy.daisyInit.pilot.setTravelSpeed(15);
+		Daisy.daisyInit.middleMotor.rotate(40);
+		Daisy.daisyInit.pilot.travel(distanzen[1] -2);
+		if(Daisy.daisyInit.sensorFront.getColorID() == SensorConstants.GREEN) return true;
 		else 
 			{
-				Initialize.pilot.travel(-10);
-				Initialize.pilot.setTravelSpeed(DriveMotors.oldSpeed);
+				Daisy.daisyInit.pilot.travel(-10);
+				Daisy.daisyInit.pilot.setTravelSpeed(DriveMotors.oldSpeed);
 				return false;
 			}
 		
@@ -101,15 +101,14 @@ public class ultraSensor{// extends UltrasonicSensor {
 	{
 		int checker=0;
 		
-		Initialize.pilot.travel(distanzen[1]);
-		Initialize.pilot.forward();
+		Daisy.daisyInit.pilot.travel(distanzen[1]);
+		Daisy.daisyInit.pilot.forward();
 		do
 		{
-			checker = Initialize.motors.checkRise();
+			checker = Daisy.daisyInit.motors.checkRise();
 			if(checker == 1) return false; //ist keine Wand, da checkRise()=1 -> war Steigung und wurde bewältigt
 		}while (checker != -1 );
 		return true;  //ist eine Wand, da checkRise()=-1 -> Blockade
 	}
 
 }
-*/

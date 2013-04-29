@@ -1,5 +1,5 @@
 
-public class daisy 
+public class Daisy 
 {
 
 	static int rise=0;
@@ -11,17 +11,17 @@ public class daisy
 		
 		while (true)
 		{
-			Initialize.pilot.forward();
-			if(Initialize.motors.checkRise()== -1) return;
+			daisyInit.pilot.forward();
+			if(daisyInit.motors.checkRise()== -1) return;
 			
 			//daisy.checkSound();
 			
-			while (Initialize.sonicSensor.getDistance() >= 24 )
+			while (daisyInit.sonicSensor.getDistance() >= 24 )
 			{
-				System.out.println("Speed SET: " + Initialize.pilot.getTravelSpeed() +"\n");
-				System.out.println("Speed CUR: " + Initialize.motors.getSpeed() +"\n");
+				System.out.println("Speed SET: " + daisyInit.pilot.getTravelSpeed() +"\n");
+				System.out.println("Speed CUR: " + daisyInit.motors.getSpeed() +"\n");
 				//daisy.checkSound();
-				rise = Initialize.motors.checkRise();
+				rise = daisyInit.motors.checkRise();
 				if (rise == -1)return;
 
 			}
@@ -29,11 +29,11 @@ public class daisy
 			if (rise == -1) return;
 			
 			//daisy.checkSound();
-			Initialize.pilot.stop();
+			daisyInit.pilot.stop();
 			//daisy.checkSound();
 			daisyInit.middleMotor.rotate(35);
 			//daisy.checkSound();
-			Initialize.pilot.rotate(90);
+			daisyInit.pilot.rotate(90);
 			//daisy.checkSound();
 			daisyInit.middleMotor.rotate(-35);
 			//daisy.checkSound();

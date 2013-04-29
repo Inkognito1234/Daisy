@@ -14,20 +14,20 @@ import java.io.File;
 public class Initialize {
 	
 	//Ultraschall sensor definieren
-	static public UltrasonicSensor sonicSensor = new UltrasonicSensor( SensorPort.S1);
+	public UltrasonicSensor sonicSensor = new UltrasonicSensor( SensorPort.S1);
 		
 	//Motoren definieren
 	public  NXTRegulatedMotor middleMotor = Motor.C;
 
 	//Piloten definieren
-	static DifferentialPilot pilot = new DifferentialPilot(DriveMotors.RADDURCHMESSER,DriveMotors.RADABSTAND, Motor.B, Motor.A);
-	static DriveMotors motors=new DriveMotors();
+	public DifferentialPilot pilot = new DifferentialPilot(DriveMotors.RADDURCHMESSER,DriveMotors.RADABSTAND, Motor.B, Motor.A);
+	public DriveMotors motors=new DriveMotors();
 
 
 	//Farbsensoren definieren
-	static public ColorSensor sensorFront = new ColorSensor( SensorPort.S2);
-	static public ColorSensor sensorLeft = new ColorSensor( SensorPort.S3);
-	static public ColorSensor sensorRight = new ColorSensor( SensorPort.S4);
+	public ColorSensor sensorFront = new ColorSensor( SensorPort.S2);
+	public ColorSensor sensorLeft = new ColorSensor( SensorPort.S3);
+	public ColorSensor sensorRight = new ColorSensor( SensorPort.S4);
 	
 	//Soundfile
 	public final File sound1 = new File("sound1.wav");
