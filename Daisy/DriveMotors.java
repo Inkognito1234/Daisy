@@ -1,22 +1,15 @@
-import lejos.nxt.Motor;
-import lejos.nxt.NXTRegulatedMotor;
-//import lejos.robotics.navigation.DifferentialPilot;
+
 import lejos.util.Delay;
 
-public class DriveMotors{
+public class DriveMotors
+{
+	
+	//public DriveMotors motors = new DriveMotors();
 
-	public static final double RADDURCHMESSER = 5.6;
-	public static final double RADABSTAND = 11.5;
-	
-	static public  NXTRegulatedMotor rightMotor = Motor.A;
-	static public  NXTRegulatedMotor leftMotor = Motor.B;
-	
-	//public static DriveMotors pilot = new DriveMotors(RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A) ;
-	
-	static final  double oldSpeed = Daisy.daisyInit.driveSpeed;
-	static double newSpeed = oldSpeed;
-	static boolean poweredUp = false;						//gibt an ob man die Geschw. erhöht hat
-	static int counter=0; 									//zählt die Anzahl von checkRise aufrufen (zur Blockadeerkennung)
+	final double oldSpeed = Daisy.daisyInit.driveSpeed;
+	double newSpeed = oldSpeed;
+	boolean poweredUp = false;						//gibt an ob man die Geschw. erhöht hat
+	int counter=0; 									//zählt die Anzahl von checkRise aufrufen (zur Blockadeerkennung)
 	
 	
 	
@@ -24,10 +17,11 @@ public class DriveMotors{
 	//eigene Geschw.-berechnung, weil vorhandene Finktionen nicht funktionierten :-)
 	public double getSpeed()
 	{
+		
 		int msDelay=500;
-		int rightTacho1 = DriveMotors.rightMotor.getTachoCount();
+		int rightTacho1 = Daisy.daisyInit.rightMotor.getTachoCount();
 		Delay.msDelay(msDelay);
-		int rightTacho2 = DriveMotors.rightMotor.getTachoCount();
+		int rightTacho2 = Daisy.daisyInit.rightMotor.getTachoCount();
 		
 		/*  nicht nötig da beim Fahren beide Motoren möglichst gleich schnell sein sollten
 		 * 
@@ -48,7 +42,7 @@ public class DriveMotors{
 		//else speed = Math.min(leftSpeed, rightSpeed) ; //gibt den lansameren Wert zurück
 				
 		//return speed;
-		return rightSpeed;  //rightSpeed = leftSpeed = speed , da beide Motoren gleich angesteuert werden
+		return Math.max(rightSpeed, 0.1);  //rightSpeed = leftSpeed = speed , da beide Motoren gleich angesteuert werden
 	}
 	
 	/**

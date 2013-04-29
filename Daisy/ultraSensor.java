@@ -1,16 +1,8 @@
-///import lejos.nxt.I2CPort;
 import lejos.nxt.SensorConstants;
-//import lejos.nxt.UltrasonicSensor;
 
 
-public class ultraSensor{
-
-	//public ultraSensor(I2CPort port) 
-	//{
-		//super(port);
-		// TODO Auto-generated constructor stub
-	//}
-	
+public class ultraSensor
+{
 	int[] dist;
 	
 	int count=0, sum=0, durchschnitt=0, checkLeft=0, checkRight=0;
@@ -91,7 +83,7 @@ public class ultraSensor{
 		else 
 			{
 				Daisy.daisyInit.pilot.travel(-10);
-				Daisy.daisyInit.pilot.setTravelSpeed(DriveMotors.oldSpeed);
+				Daisy.daisyInit.pilot.setTravelSpeed(Daisy.motors.oldSpeed);
 				return false;
 			}
 		
@@ -105,7 +97,7 @@ public class ultraSensor{
 		Daisy.daisyInit.pilot.forward();
 		do
 		{
-			checker = Daisy.daisyInit.motors.checkRise();
+			checker = Daisy.motors.checkRise();
 			if(checker == 1) return false; //ist keine Wand, da checkRise()=1 -> war Steigung und wurde bewältigt
 		}while (checker != -1 );
 		return true;  //ist eine Wand, da checkRise()=-1 -> Blockade

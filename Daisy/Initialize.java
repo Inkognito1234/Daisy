@@ -1,40 +1,44 @@
-
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 
 import lejos.nxt.ColorSensor;
 import lejos.nxt.NXTRegulatedMotor;
-import lejos.nxt.Sound;
+//import lejos.nxt.Sound;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
-import java.io.File;
+//import java.io.File;
 
 
-public class Initialize {
+public class Initialize 
+{
+
+	//Konstanten
+	public final double RADDURCHMESSER = 5.6;
+	public final double RADABSTAND = 11.5;
+	public final int BALLDURCHMESSER = 7;
+	
+	//Piloten definieren
+	
+	public DifferentialPilot pilot = new DifferentialPilot(RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A);
 	
 	//Ultraschall sensor definieren
 	public UltrasonicSensor sonicSensor = new UltrasonicSensor( SensorPort.S1);
 		
 	//Motoren definieren
 	public  NXTRegulatedMotor middleMotor = Motor.C;
-
-	//Piloten definieren
-	public DifferentialPilot pilot = new DifferentialPilot(DriveMotors.RADDURCHMESSER,DriveMotors.RADABSTAND, Motor.B, Motor.A);
-	public DriveMotors motors=new DriveMotors();
-
-
+	public  NXTRegulatedMotor rightMotor = Motor.A;
+	public  NXTRegulatedMotor leftMotor = Motor.B;
+	
 	//Farbsensoren definieren
 	public ColorSensor sensorFront = new ColorSensor( SensorPort.S2);
 	public ColorSensor sensorLeft = new ColorSensor( SensorPort.S3);
 	public ColorSensor sensorRight = new ColorSensor( SensorPort.S4);
 	
 	//Soundfile
-	public final File sound1 = new File("sound1.wav");
+	//public final File sound1 = new File("sound1.wav");
 	
-	//Konstanten
-	
-	final int BALLDURCHMESSER = 7;
+
 	
 	//Variablen zum initialisieren
 	public final double driveSpeed=20 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
@@ -48,16 +52,16 @@ public class Initialize {
 	double risePowerUp = 1.2;			// gibt an um wie viel checkRise die Geschw. erhöht (werte > 1)
 	
 	//schaut ob File zuende gespielt wurde um neu zu starten (Endlos/Weiderholschleife)
-	public void checkSound()
+	/*public void checkSound()
 	{
 		if(Sound.getTime() <= 0) Sound.playSample(this.sound1, 100);
-	}
+	}*/
 	
 	//Initialisiert die einzelnen Elemente
 	public void init()
 	{
-		
-		Sound.playSample(sound1, volume);	// spielt File ab mit max Lautstaerke
+
+		//Sound.playSample(sound1, volume);	// spielt File ab mit max Lautstaerke
 
 		middleMotor.stop();
 		pilot.setRotateSpeed( spinSpeed );	// Grad/s (Roboterdrehung)

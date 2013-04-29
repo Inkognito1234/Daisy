@@ -28,8 +28,8 @@ public class Route {
 		positionY = 0;
 		orientation = 0;
 		// Zuruecksetzen der Motordrehzahlen
-		DriveMotors.rightMotor.resetTachoCount();
-		DriveMotors.leftMotor.resetTachoCount();
+		Daisy.daisyInit.rightMotor.resetTachoCount();
+		Daisy.daisyInit.leftMotor.resetTachoCount();
 		positionIsUpdated = true;
 	}
 
