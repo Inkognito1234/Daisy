@@ -1,19 +1,39 @@
+import lejos.nxt.Motor;
+import lejos.nxt.NXTRegulatedMotor;
+//import lejos.robotics.navigation.DifferentialPilot;
 import lejos.util.Delay;
 
-public class DriveMotors {
+public class DriveMotors{// extends DifferentialPilot {
 	
-	static final  double oldSpeed = daisy.daisy.driveSpeed;
+	//public DriveMotors(double wheelDiameter, double trackWidth,
+		//	NXTRegulatedMotor leftMotor, NXTRegulatedMotor rightMotor) {
+		//super(wheelDiameter, trackWidth, leftMotor, rightMotor);
+		// TODO Auto-generated constructor stub
+	//}
+
+	public static final double RADDURCHMESSER = 5.6;
+	public static final double RADABSTAND = 11.5;
+	
+	static public  NXTRegulatedMotor rightMotor = Motor.A;
+	static public  NXTRegulatedMotor leftMotor = Motor.B;
+	
+	//public static DriveMotors pilot = new DriveMotors(RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A) ;
+	
+	static final  double oldSpeed = daisy.daisyInit.driveSpeed;
 	static double newSpeed = oldSpeed;
 	static boolean poweredUp = false;						//gibt an ob man die Geschw. erhöht hat
 	static int counter=0; 									//zählt die Anzahl von checkRise aufrufen (zur Blockadeerkennung)
+	
+	
+	
 	
 	//eigene Geschw.-berechnung, weil vorhandene Finktionen nicht funktionierten :-)
 	public double getSpeed()
 	{
 		int msDelay=500;
-		int rightTacho1 = daisy.daisy.rightMotor.getTachoCount();
+		int rightTacho1 = DriveMotors.rightMotor.getTachoCount();
 		Delay.msDelay(msDelay);
-		int rightTacho2 = daisy.daisy.rightMotor.getTachoCount();
+		int rightTacho2 = DriveMotors.rightMotor.getTachoCount();
 		
 		/*  nicht nötig da beim Fahren beide Motoren möglichst gleich schnell sein sollten
 		 * 
@@ -49,16 +69,16 @@ public class DriveMotors {
 	public int checkRise()
 	{
 
-		if( newSpeed * Math.min(daisy.daisy.riseTreshold, 0.999) > this.getSpeed() ) 
+		if( newSpeed * Math.min(daisy.daisyInit.riseTreshold, 0.999) > this.getSpeed() ) 
 		{	
-			newSpeed =  Math.min(  newSpeed * Math.max(daisy.daisy.risePowerUp, 1.01), 43);  //erhöht die Geschw. , aber nicht höher als 43
-			daisy.daisy.pilot.setTravelSpeed(newSpeed);
+			newSpeed =  Math.min(  newSpeed * Math.max(daisy.daisyInit.risePowerUp, 1.01), 43);  //erhöht die Geschw. , aber nicht höher als 43
+			Initialize.pilot.setTravelSpeed(newSpeed);
 			poweredUp = true;
 			
 			counter++;
-			if(counter >= daisy.daisy.blockadeNachVersuchen)
+			if(counter >= daisy.daisyInit.blockadeNachVersuchen)
 			{
-				daisy.daisy.pilot.setTravelSpeed(oldSpeed);
+				Initialize.pilot.setTravelSpeed(oldSpeed);
 				newSpeed = oldSpeed;
 				counter = 0;
 				poweredUp = false;
@@ -67,20 +87,20 @@ public class DriveMotors {
 			return 3;	// (weiterhin) Steigung, aber mit Erhöhung der Geschw.
 			
 		}
-		else if(daisy.daisy.pilot.getTravelSpeed() != oldSpeed && this.getSpeed() > oldSpeed * daisy.daisy.riseTreshold) 
+		else if(Initialize.pilot.getTravelSpeed() != oldSpeed && this.getSpeed() > oldSpeed * daisy.daisyInit.riseTreshold) 
 			 {
-				 daisy.daisy.pilot.setTravelSpeed(oldSpeed);
-				 newSpeed = oldSpeed;
-				 counter = 0;
-				 poweredUp = false;
-				 return 1;
+				Initialize.pilot.setTravelSpeed(oldSpeed);
+				newSpeed = oldSpeed;
+				counter = 0;
+				poweredUp = false;
+				return 1;
 			 } 
 		if(poweredUp) 
 			{
 				counter++;
-				if(counter >= daisy.daisy.blockadeNachVersuchen)
+				if(counter >= daisy.daisyInit.blockadeNachVersuchen)
 				{
-					daisy.daisy.pilot.setTravelSpeed(oldSpeed);
+					Initialize.pilot.setTravelSpeed(oldSpeed);
 					newSpeed = oldSpeed;
 					counter = 0;
 					poweredUp = false;

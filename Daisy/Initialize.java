@@ -2,44 +2,45 @@
 import lejos.nxt.Motor;
 import lejos.nxt.SensorPort;
 
-import lejos.nxt.UltrasonicSensor;
-import lejos.robotics.navigation.DifferentialPilot;
-
 import lejos.nxt.ColorSensor;
 import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.Sound;
+import lejos.nxt.UltrasonicSensor;
+import lejos.robotics.navigation.DifferentialPilot;
+
 import java.io.File;
 
 
 public class Initialize {
 	
-	//wichtige Konstanten
-	public final double RADDURCHMESSER = 5.6;
-	public final double RADABSTAND = 11.5;
-
-	
-	//Motoren definieren um gleichzietig anzusprechen 
-	public final DifferentialPilot pilot = new DifferentialPilot(RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A) ;
-		
 	//Ultraschall sensor definieren
-	public final UltrasonicSensor sonicSensor = new UltrasonicSensor( SensorPort.S1);
+	static public UltrasonicSensor sonicSensor = new UltrasonicSensor( SensorPort.S1);
 		
-	//Motoren definieren (rechts/links wegen Geschw.-berechnung nochmal einzeln nötig)
+	//Motoren definieren
 	public  NXTRegulatedMotor middleMotor = Motor.C;
-	public  NXTRegulatedMotor rightMotor = Motor.A;
-	public  NXTRegulatedMotor leftMotor = Motor.B;
+
+	//Piloten definieren
+	static DifferentialPilot pilot = new DifferentialPilot(DriveMotors.RADDURCHMESSER,DriveMotors.RADABSTAND, Motor.B, Motor.A);
+	static DriveMotors motors=new DriveMotors();
+
 
 	//Farbsensoren definieren
-	public final ColorSensor sensorFront = new ColorSensor( SensorPort.S2);
-	public final ColorSensor sensorLeft = new ColorSensor( SensorPort.S3);
-	public final ColorSensor sensorRight = new ColorSensor( SensorPort.S4);
+	static public ColorSensor sensorFront = new ColorSensor( SensorPort.S2);
+	static public ColorSensor sensorLeft = new ColorSensor( SensorPort.S3);
+	static public ColorSensor sensorRight = new ColorSensor( SensorPort.S4);
 	
 	//Soundfile
 	public final File sound1 = new File("sound1.wav");
 	
+	//Konstanten
+	
+	final int BALLDURCHMESSER = 7;
+	
 	//Variablen zum initialisieren
-	double driveSpeed=20, spinSpeed=350 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
-	int volume=100, grabSpeed=150;
+	public final double driveSpeed=20 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
+
+	public final double spinSpeed=350;
+	static int volume=100, grabSpeed=150;
 	int blockadeNachVersuchen = 15;		// Hier Zahl einsetzen die bestimmt wie oft checkRise() ausgeführt wird, 
 										// bis es als Blockade und nicht als Steigung interpretiert wird
 	double riseTreshold = 0.9;			// bestimmt ab wann checkRise die Geschwindigkeit erhöht (Werte < 1); 
@@ -57,7 +58,7 @@ public class Initialize {
 	{
 		
 		Sound.playSample(sound1, volume);	// spielt File ab mit max Lautstaerke
-		
+
 		middleMotor.stop();
 		pilot.setRotateSpeed( spinSpeed );	// Grad/s (Roboterdrehung)
 		pilot.setTravelSpeed( driveSpeed);	// cm/s
