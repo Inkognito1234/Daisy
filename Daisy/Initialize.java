@@ -41,9 +41,9 @@ public class Initialize
 
 	
 	//Variablen zum initialisieren
-	public final double driveSpeed=20 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
+	public final double driveSpeed=15 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
 
-	public final double spinSpeed=350;
+	public final double spinSpeed=270;
 	static int volume=100, grabSpeed=150;
 	int blockadeNachVersuchen = 7;		// Hier Zahl einsetzen die bestimmt wie oft checkRise() ausgeführt wird, 
 										// bis es als Blockade und nicht als Steigung interpretiert wird
@@ -66,6 +66,7 @@ public class Initialize
 		middleMotor.stop();
 		pilot.setRotateSpeed( spinSpeed );	// Grad/s (Roboterdrehung)
 		pilot.setTravelSpeed( driveSpeed);	// cm/s
+		//pilot.setAcceleration(100);
 		middleMotor.setSpeed( grabSpeed);	// Grad/s (Motordrehung/-leistung)
 		sensorFront.setFloodlight(false);	// ? :-)
 		sensorLeft.setFloodlight(false);

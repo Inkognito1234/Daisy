@@ -26,7 +26,12 @@ public class Daisy
 				
 				dist=daisyInit.sonicSensor.getDistance();
 				
-			}while ( dist >= 35 );
+			}while ( dist >= 22 );
+			
+			daisyInit.pilot.stop();
+
+			System.out.println("DIST: "+ dist +"\n");
+			//Button.waitForAnyPress();
 				
 			distanzen = objScanner.scanObject(dist);
 			//System.out.println(distanzen[0] +" "+ distanzen[1]+" "+distanzen[2]+"\n");
@@ -38,7 +43,7 @@ public class Daisy
 				case -1: break;
 				
 				//Messung ergab großes Obj. -> untersuche auf Wand
-				case  1: if(objScanner.isWall(distanzen)) Sound.beepSequence();
+				case  1: if(objScanner.isWall(distanzen)) Sound.beep();
 							else Sound.beepSequenceUp(); break;
 							
 				//Objekt ist groß, aber man könnte links vorbei
@@ -57,12 +62,16 @@ public class Daisy
 				default: break;
 			}
 			
-			daisyInit.pilot.stop();
+			if(art != -1)
+				{
+					
+					daisyInit.pilot.stop();
+					
+					daisyInit.pilot.rotate(90);
+				}
 			
 			//daisyInit.middleMotor.rotate(35);
-			
-			daisyInit.pilot.rotate(90);
-			
+	
 			//daisyInit.middleMotor.rotate(-35);
 			
 			

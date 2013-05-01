@@ -1,4 +1,5 @@
 import lejos.nxt.SensorConstants;
+import lejos.nxt.Sound;
 import lejos.util.Delay;
 
 public class ultraSensor
@@ -6,7 +7,7 @@ public class ultraSensor
 	
 	public double[] scanObject(int lastDist)
 	{
-		int count=8, distToSave=3;
+		int count=16, distToSave=3;
 		
 		int[] dist = new int[count];
 		
@@ -38,6 +39,8 @@ public class ultraSensor
 			{
 				distanzen[1] = durchschnitt;
 				//Daisy.daisyInit.sonicSensor.continuous();
+				System.out.println("Blubb: " + distanzen[0] +" "+ distanzen[1]+" "+ distanzen[2]+"\n");
+				//Button.waitForAnyPress();
 				return distanzen; //Messung lastDist war falsch -> kein Objekt in der Nähe -> [0] und [2] = -1
 			}
 		else
@@ -89,19 +92,25 @@ public class ultraSensor
 	public int whatKind(double[] distanzen)
 	{
 		//falsche Messung:
-		if ( distanzen[0] < 0 || distanzen[2] < 0) return -1; 
+		if ( distanzen[0] < 0 || distanzen[2] < 0) 
+			{
+				Sound.beepSequence();
+				Sound.beepSequenceUp();
+
+				return -1; 
+			}
 		
 		// Objekt ist groß, vermutlich Wand:
 		else if(distanzen[0] <= distanzen[1] +8 && distanzen[2] <= distanzen[1] +8) return 1; 
 		
 		// Objekt ist groß, aber man könnte links vorbei:
-			else if( distanzen[0] > distanzen[1] && distanzen[2] <= distanzen[1] +8) return 2;	
+			else if( distanzen[0] > distanzen[1]+15 && distanzen[2] <= distanzen[1] +8) return 2;	
 		
 		// Objekt ist groß, aber man könnte rechts vorbei:
-				else if(distanzen[0] <= distanzen[1] +8 && distanzen[2] > distanzen[1]) return 3;
+				else if(distanzen[0] <= distanzen[1] +8 && distanzen[2] > distanzen[1] +15) return 3;
 		
 		//Objekt ist klein, vermutlich Ball:
-					else if(distanzen[0] > distanzen[1] && distanzen[2] >= distanzen[1] ) return 4;	
+					else if(distanzen[0] > distanzen[1] +15 && distanzen[2] > distanzen[1] +15 ) return 4;	
 		
 		return 0;  //Nichts traf zu ?:/ .... ( einfach um alles abzudecken ^^ )
 		
@@ -130,7 +139,7 @@ public class ultraSensor
 	
 	public boolean isWall(double [] distanzen)
 	{
-		int checker=0;
+		int checker=0, counter=0;
 		boolean poweredUp= false;
 		Daisy.daisyInit.pilot.travel(distanzen[1]);
 		Daisy.daisyInit.pilot.forward();
@@ -138,6 +147,7 @@ public class ultraSensor
 		
 		do
 		{
+			counter++;
 			checker = Daisy.motors.checkRise();
 			switch(checker)
 			{
@@ -149,6 +159,7 @@ public class ultraSensor
 					else continue;
 			
 			}
+			if(counter >= 2* Daisy.daisyInit.blockadeNachVersuchen) checker = -1;
 		}while (checker != -1 );
 		return true;  //ist eine Wand, da checkRise()=-1 -> Blockade
 	}
