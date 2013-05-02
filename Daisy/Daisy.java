@@ -32,7 +32,9 @@ public class Daisy
 
 			System.out.println("DIST: "+ dist +"\n");
 			//Button.waitForAnyPress();
-				
+			Sound.setVolume(100);
+			Sound.playSample(daisyInit.soundMGS, daisyInit.volume);	// spielt File ab mit max Lautstaerke	
+			Sound.setVolume(20);
 			distanzen = objScanner.scanObject(dist);
 			//System.out.println(distanzen[0] +" "+ distanzen[1]+" "+distanzen[2]+"\n");
 			art = objScanner.whatKind(distanzen);

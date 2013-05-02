@@ -7,7 +7,7 @@ import lejos.nxt.NXTRegulatedMotor;
 import lejos.nxt.UltrasonicSensor;
 import lejos.robotics.navigation.DifferentialPilot;
 
-//import java.io.File;
+import java.io.File;
 
 
 public class Initialize 
@@ -36,7 +36,7 @@ public class Initialize
 	public ColorSensor sensorRight = new ColorSensor( SensorPort.S4);
 	
 	//Soundfile
-	//public final File sound1 = new File("sound1.wav");
+	public final File soundMGS = new File("soundMGS.wav");
 	
 
 	
@@ -62,7 +62,7 @@ public class Initialize
 	{
 
 		//Sound.playSample(sound1, volume);	// spielt File ab mit max Lautstaerke
-
+		
 		middleMotor.stop();
 		pilot.setRotateSpeed( spinSpeed );	// Grad/s (Roboterdrehung)
 		pilot.setTravelSpeed( driveSpeed);	// cm/s
