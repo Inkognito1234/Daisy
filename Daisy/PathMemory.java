@@ -1,9 +1,27 @@
 public class PathMemory {
 
+//	static OdometryPoseProvider(MoveProvider mp);
+
+/*	
+	
+	static int leftTurn = 2;
+	static int rightTurn = 1;
+	static int goStraight = 0;
+	
+	double[][] way = new double[20][20];
+	way[0][getMovement.getDistanceTraveled()]; 
+	resetTacho();
+	way[1][rotate(double angle)];
+	
+	
+*/
+
+// ##################################################	
+	
+	
+	
 	// pseudocode, der nachher durch richtigen code ersetzt wird
-
-	double[][] turns = new double[20][20];
-
+	
 	/*
 	 * die beiden array-felder stehen hier fuer die zwei motoren (bzw. deren
 	 * motordrehung; 20/20 kann noch genaendert werden, dies kommt auf den
