@@ -1,7 +1,6 @@
 
 import java.util.Random;
 
-import lejos.nxt.Sound;
 import lejos.robotics.navigation.Pose;
 import lejos.util.Delay;
 
@@ -15,6 +14,9 @@ public class DriveMotors
 	boolean poweredUp = false;						//gibt an ob man die Geschw. erhöht hat
 	int counter=0; 									//zählt die Anzahl von checkRise aufrufen (zur Blockadeerkennung)
 	
+	int[] colors = new int[3]; 
+	boolean complete = true;
+
 	
 	
 	
@@ -165,6 +167,8 @@ public class DriveMotors
 		Random ran=new Random();
 		int turn;
 		Pose ausgangsPkt = Daisy.poser.getPose();
+		colors = Daisy.colorSens.getColors();
+		complete = true;
 		
 		switch(art)
 		{
@@ -240,23 +244,321 @@ public class DriveMotors
 			
 			case  2: 
 				//Objekt ist groß, aber man könnte links vorbei
-				Daisy.daisyInit.pilot.rotate(Math.atan(distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER) )* 360/(2*Math.PI) );
-				 Daisy.daisyInit.pilot.forward(); break;
+				Daisy.daisyInit.pilot.rotate(Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI) , true);
+				while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6)
+				{
+					colors = Daisy.colorSens.getColors();
+					if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+					{
+						Daisy.daisyInit.pilot.stop();
+						if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
+						{
+							//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+							return;
+						}
+						complete = false;
+						break;
+					}
+				}
+				
+				Daisy.daisyInit.pilot.stop();
+				
+				//Konnten Links nicht vorbei, da eine Linie im Weg-> ein Stueck nach rechts
+				if(!complete)
+				{	 
+					complete = true;
+
+					tryRight(ausgangsPkt);
+					return;
+						
+				}
+				else
+				{
+					Daisy.daisyInit.pilot.travel(1.5* distanzen[1], true);
+					while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
+					{
+						colors = Daisy.colorSens.getColors();
+						if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+						{
+							Daisy.daisyInit.pilot.stop();
+							if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
+							{
+								//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+								return;
+							}
+							complete = false;
+							break;
+						}
+					}
+					
+					Daisy.daisyInit.pilot.stop();
+					
+					//Falls waehrend der Fahrt wieder eine Linie UND man dadruch nicht weit genug kam
+					//Zum Ausgangspunkt, umdrehen und weiter.
+					if(!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= distanzen[1])
+					{
+						complete = true;
+
+						tryRight(ausgangsPkt);
+						return;
+	
+					}
+					else
+					{
+						Daisy.daisyInit.pilot.rotate(- Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI) , true);
+						//forward() ?
+						return;
+					}
+						
+				}
+				
 			
 			
 			case  3: 
 				// Objekt ist groß, aber man könnte rechts vorbei:
-				Daisy.daisyInit.pilot.rotate( - Math.atan(distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER) )* 360/(2*Math.PI) );
-				Daisy.daisyInit.pilot.forward(); break;
-	 		
+				
+				Daisy.daisyInit.pilot.rotate(- Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI) , true);
+				while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6)
+				{
+					colors = Daisy.colorSens.getColors();
+					if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+					{
+						Daisy.daisyInit.pilot.stop();
+						if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
+						{
+							//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+							return;
+						}
+						complete = false;
+						break;
+					}
+				}
+				
+				Daisy.daisyInit.pilot.stop();
+				
+				//Konnten Rechts nicht vorbei, da eine Linie im Weg-> ein Stueck nach rechts
+				if(!complete)
+				{	 
+					complete = true;
+
+					tryLeft(ausgangsPkt);
+					return;
+						
+				}
+				else
+				{
+					Daisy.daisyInit.pilot.travel(1.5* distanzen[1], true);
+					while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
+					{
+						colors = Daisy.colorSens.getColors();
+						if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+						{
+							Daisy.daisyInit.pilot.stop();
+							if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
+							{
+								//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+								return;
+							}
+							complete = false;
+							break;
+						}
+					}
+					
+					Daisy.daisyInit.pilot.stop();
+					
+					//Falls waehrend der Fahrt wieder eine Linie UND man dadruch nicht weit genug kam
+					//Zum Ausgangspunkt, umdrehen und weiter.
+					if(!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= distanzen[1])
+					{
+						complete = true;
+
+						tryLeft(ausgangsPkt);
+						return;
+	
+					}
+					else
+					{
+						Daisy.daisyInit.pilot.rotate(Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI) , true);
+						//forward() ?
+						return;
+					}
+						
+				}
+					 		
 			
 			case  4: 
 				//Objekt ist klein, vermutlich Ball:
-				if(Daisy.objScanner.isBall(distanzen)) Sound.beepSequenceUp();
-				else Sound.beepSequence(); break;
+				if(Daisy.objScanner.isBall(distanzen)) 
+				{
+					//BALLEINSAMMELN PROGRAMMAUFRUF! MUSS NOCH PROGRAMMIERT WERDEN!
+					return;
+				}
+				else
+				{
+					//Versuchen Links vorbei zu kommen
+					Daisy.daisyInit.pilot.rotate(90, true);
+					while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6)
+					{
+						colors = Daisy.colorSens.getColors();
+						if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+						{
+							Daisy.daisyInit.pilot.stop();
+							if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
+							{
+								//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+								return;
+							}
+							complete = false;
+							break;
+						}
+					}
+					
+					Daisy.daisyInit.pilot.stop();
+					
+					if(!complete)
+					{
+						complete = true;
+						
+						tryRight(ausgangsPkt);
+						return;
+						
+					}
+					else
+					{
+						Daisy.daisyInit.pilot.travel(20, true);
+						while (Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22) 
+						{
+							colors = Daisy.colorSens.getColors();
+							if (colors[0] != 6 || colors[1] != 6 || colors[2] != 6) 
+							{
+								Daisy.daisyInit.pilot.stop();
+								if (colors[0] == 1 || colors[1] == 1 || colors[2] == 1) 
+								{
+									// AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT
+									// WERDEN!
+									return;
+								}
+								complete = false;
+								break;
+							}
+						}
+
+						Daisy.daisyInit.pilot.stop();
+
+						// Falls waehrend der Fahrt wieder eine Linie UND man dadruch nicht weit
+						// genug kam
+						// Zum Ausgangspunkt, umdrehen und weiter.
+						if (!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= 15) 
+						{
+							Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(),
+									ausgangsPkt.getHeading());
+							Daisy.daisyInit.pilot.rotate(180);
+							// forward() ?
+							return;
+						} 
+						else 
+						{
+							Daisy.daisyInit.pilot.rotate(-90);
+							// forward() ?
+							return;
+						}
+					}
+				}
 					 
 			//nichts traf zu ?:/ .... alles muss abgedeckt werden!
-			default: break;
+			default: //SOLL WAS UNTERNOMMEN WERDEN?!
+				break;
+		}
+	}
+	
+	//----------------------------------------------------------------------
+
+	void tryRight(Pose ausgangsPkt)
+	{
+		
+		Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
+		Daisy.daisyInit.pilot.rotate(-90);
+		Daisy.daisyInit.pilot.travel(20, true);
+		while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
+		{
+			colors = Daisy.colorSens.getColors();
+			if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+			{
+				Daisy.daisyInit.pilot.stop();
+				if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
+				{
+					//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+					return;
+				}
+				complete = false;
+				break;
+			}
+		}
+		
+		Daisy.daisyInit.pilot.stop();
+		
+		//Falls waehrend der Fahrt wieder eine Linie UND man dadruch nicht weit genug kam
+		//Zum Ausgangspunkt, umdrehen und weiter.
+		if(!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= 15)
+		{
+			Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
+			Daisy.daisyInit.pilot.rotate(180);
+			// forward() ?
+			return;
+		}
+		else
+		{
+			Daisy.daisyInit.pilot.rotate(90);
+			//forward() ?
+			return;
+		}
+	}
+
+//----------------------------------------------------------------------
+
+	void tryLeft(Pose ausgangsPkt) 
+	{
+
+		Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(),ausgangsPkt.getHeading());
+		Daisy.daisyInit.pilot.rotate(90, true);
+		Daisy.daisyInit.pilot.travel(20, true);
+		while (Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22) 
+		{
+			colors = Daisy.colorSens.getColors();
+			if (colors[0] != 6 || colors[1] != 6 || colors[2] != 6) 
+			{
+				Daisy.daisyInit.pilot.stop();
+				if (colors[0] == 1 || colors[1] == 1 || colors[2] == 1) 
+				{
+					// AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT
+					// WERDEN!
+					return;
+				}
+				complete = false;
+				break;
+			}
+		}
+
+		Daisy.daisyInit.pilot.stop();
+
+		// Falls waehrend der Fahrt wieder eine Linie UND man dadruch nicht weit
+		// genug kam
+		// Zum Ausgangspunkt, umdrehen und weiter.
+		if (!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= 15) 
+		{
+			Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(),
+					ausgangsPkt.getHeading());
+			Daisy.daisyInit.pilot.rotate(180);
+			// forward() ?
+			return;
+		} 
+		else 
+		{
+			Daisy.daisyInit.pilot.rotate(-90);
+			// forward() ?
+			return;
 		}
 	}
 }
+
+
