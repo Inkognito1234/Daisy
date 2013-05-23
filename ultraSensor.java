@@ -1,4 +1,3 @@
-import lejos.nxt.SensorConstants;
 import lejos.nxt.Sound;
 import lejos.util.Delay;
 
@@ -118,20 +117,22 @@ public class ultraSensor
 	{
 		
 		Daisy.daisyInit.pilot.setTravelSpeed(15);
-		Daisy.daisyInit.middleMotor.rotate(40);
-		Daisy.daisyInit.pilot.travel(distanzen[1] -3);
-		if(Daisy.daisyInit.sensorFront.getColorID() == SensorConstants.WHITE) 
+		Daisy.daisyInit.middleMotor.rotate(40); //Macht Greifarm auf
+		Daisy.daisyInit.pilot.travel(distanzen[1], true);
+		while(Daisy.daisyInit.pilot.isMoving())
 		{
-			Daisy.daisyInit.pilot.setTravelSpeed(Daisy.motors.oldSpeed);
-			return true;
-		}
-		else 
+			if(Daisy.daisyInit.sensorFront.getColorID() == 1)
 			{
-				Daisy.daisyInit.pilot.travel(-14);
-				Daisy.daisyInit.middleMotor.rotate(-40);
-				Daisy.daisyInit.pilot.setTravelSpeed(Daisy.motors.oldSpeed);
-				return false;
+				Daisy.daisyInit.pilot.stop();
+				return true;
 			}
+		}			
+
+		Daisy.daisyInit.pilot.travel(-distanzen[1]);
+		Daisy.daisyInit.middleMotor.rotate(-40); //Schliesst Greifarm
+		Daisy.daisyInit.pilot.setTravelSpeed(Daisy.motors.oldSpeed);
+		return false;
+
 		
 	}
 	
@@ -148,7 +149,7 @@ public class ultraSensor
 		if(0.3937* distanzen[1] < drive) 
 			{
 				//Zu nah, also etwas zuruecksetzen
-				Daisy.daisyInit.pilot.travel(-1.2*drive);
+				Daisy.daisyInit.pilot.travel(-1.1*drive);
 				
 				//Neue Messung notwendig
 				for(int i=0; i < count; i++)
@@ -161,27 +162,30 @@ public class ultraSensor
 				
 				entf1 = durchschnitt;
 			}
-		else entf1 = distanzen[1];
+		else 
+			entf1 = distanzen[1];
 			
-				Daisy.daisyInit.pilot.travel(drive);
+			sum = 0;
+			
+			Daisy.daisyInit.pilot.travel(drive);
 				
-				Delay.msDelay(500);
+			Delay.msDelay(500);
 
-				for(int i=0; i < count; i++)
-				{
-					dist[i]=Daisy.daisyInit.sonicSensor.getDistance();
-					Delay.msDelay(25);
-					sum = sum + dist[i];
-				}
-				durchschnitt = sum / count;
+			for(int i=0; i < count; i++)
+			{
+				dist[i]=Daisy.daisyInit.sonicSensor.getDistance();
+				Delay.msDelay(25);
+				sum = sum + dist[i];
+			}
+			durchschnitt = sum / count;
 				
-				entf2 = durchschnitt;
+			entf2 = durchschnitt;
 				
-				//Ist Entfernung bedingt durch Steigung anders als bei einer Wand?
-				if(entf1 * Math.cos(angleSensor *  Math.PI / 180) - 0.3937 * drive < entf2 * Math.cos(angleSensor *  Math.PI / 180)) 
-					return false;
-				else 
-					return true;
+			//Ist Entfernung bedingt durch Steigung anders als bei einer Wand?
+			if(entf1 * Math.cos(angleSensor *  Math.PI / 180) - 0.3937 * drive < entf2 * Math.cos(angleSensor *  Math.PI / 180)) 
+				return false;
+			else 
+				return true;
 				
 		
 	}
