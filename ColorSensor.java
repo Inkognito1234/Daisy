@@ -1,11 +1,10 @@
-import lejos.robotics.navigation.Pose;
+import java.util.Random;
 
 
 public class ColorSensor 
 {
-	static boolean turnLeft=true;
 	
-	int[] getColors()
+	public int[] getColors()
 	{
 		int[] colors = new int[3];
 		
@@ -16,158 +15,238 @@ public class ColorSensor
 		return colors;
 	}
 	
+	boolean[] warsch = new boolean[3];
+	
 	//-------------------------------------------------------
 	
-	void checkTrack()
+	public boolean warscheinlichkeit(boolean left)
 	{
-		boolean ballMark=false, border=false;
-		int i=0;
-		Pose ausgangsPkt = Daisy.poser.getPose();
+
+		warsch[2] = warsch[1];
+		warsch[1] = warsch[0];
+		warsch[0] = left;
+		
+		if(warsch[0] == false && warsch[1] == true && warsch[2] == false) {
+			warsch[0] = false;
+			return true;
+			
+		}
+		
+		if(warsch[0] == true && warsch[1] == false && warsch[2] == true) {
+			warsch[0] = true;
+			return true;
+		}
+		
+		return false;
+		
+	}
+	
+	
+	public void checkTrack()
+	{
+		boolean isballMark=false;
+		int dodge = 45;
+		
+		Random rand = new Random();
+		//turn = 0 -> Rechtsdrehung; 1 -> Linksdrehung
+		//int turn = rand.nextInt(2); 
 		
 		Daisy.daisyInit.pilot.stop();
 		
 		//Pruefen ob Ballmarkierung
-		for(i=0 ; i<3 ; i++)
+		for(int i=0 ; i<3 ; i++)
 		{
 			if(isBallmark(i))
 			{
-				ballMark=true;
+				isballMark=true;
 				break;
 			}
 		}
 		
-		if(ballMark)
+		if(isballMark)
 		{
-			//AUFRUF VON BALLAUFSAMMELN! MUSS NOCH PROGRAMMIERT WERDEN!
+			Daisy.grabber.collectBall(false); //false, da USS es nicht ausgeloest hat
+			Daisy.grabber.deliverBall();
 			return;
 		}
 		
-		//Pruefen ob Begrenzung
-		for(i=0 ; i<3 ; i++)
+		Daisy.daisyInit.pilot.travel(-13);
+		
+		Daisy.daisyInit.pilot.rotate(90,true);
+		while(Daisy.daisyInit.pilot.isMoving())
 		{
-			if(isBorder(i))
+			if(Daisy.daisyInit.sensorFront.getColorID() == 7)
 			{
-				border=true;
-				break;
+				Daisy.leftSensed = true;	
+			}
+		}
+		if(!Daisy.leftSensed)
+		{
+			Daisy.daisyInit.pilot.travel(13, true);
+			while(Daisy.daisyInit.pilot.isMoving())
+			{
+				if(Daisy.daisyInit.sensorFront.getColorID() == 7)
+				{
+					Daisy.leftSensed = true;	
+				}
+			}
+			
+			Daisy.daisyInit.pilot.travel(-13);
+				
+		}
+		
+		Daisy.daisyInit.pilot.rotate(-90);
+		Daisy.daisyInit.pilot.rotate(-90, true);
+		while(Daisy.daisyInit.pilot.isMoving())
+		{
+			if(Daisy.daisyInit.sensorFront.getColorID() == 7)
+			{
+				Daisy.rightSensed = true;	
 			}
 		}
 		
-		if(border)
+		if(!Daisy.rightSensed)
 		{
-			switch(i)
+			Daisy.daisyInit.pilot.travel(13, true);
+			while(Daisy.daisyInit.pilot.isMoving())
 			{
-			case 2:
-				//Nur rechts wurde was erkannt
-				Daisy.daisyInit.pilot.steer(25, 90, true);
-				while(isBorder(2) && !isBorder(1) && Daisy.daisyInit.pilot.isMoving() )
+				if(Daisy.daisyInit.sensorFront.getColorID() == 7)
 				{
-					
+					Daisy.rightSensed = true;	
 				}
-				Daisy.daisyInit.pilot.stop();
-				if(isBorder(1) || isBallmark(1))
-				{
-					checkTrack();
-					return;
-				}
-				//wieder "nach vorne" schauen
-				Daisy.nav.goTo(Daisy.poser.getPose().getX(), Daisy.poser.getPose().getY(), ausgangsPkt.getHeading());
-				//forward() ?
-				return;
-			
-			case 1:
-				//Vorne wurde was ekannt, aber nicht Links
-				//Pruefen ob auch rechts was ist
-				if(isBorder(2))
-				{
-					Daisy.daisyInit.pilot.rotate(90);
-					Daisy.daisyInit.pilot.travel(15);
-					Daisy.daisyInit.pilot.rotate(90);
-					turnLeft = false;
-					//forward() ?
-					return;
-				}
-				
-				//rechts ist nichts erkannt worden
-				//Drehung je nach dem, ein Stueck vor und dann wieder drehen. Fertig.
-				if(turnLeft)
-				{
-					Daisy.daisyInit.pilot.rotate(90);
-					Daisy.daisyInit.pilot.travel(15);
-					Daisy.daisyInit.pilot.rotate(90);
-					turnLeft = false;
-					//forward() ?
-					return;
-				}
-				else
-				{
-					Daisy.daisyInit.pilot.rotate(-90);
-					Daisy.daisyInit.pilot.travel(15);
-					Daisy.daisyInit.pilot.rotate(-90);
-					turnLeft = true;
-					//forward() ?
-					return;
-				}
-				
-			case 0:
-				//Links wurde was erkannt
-				//Pruefen ob auch vorne was ist, aber rechts frei
-				if(isBorder(1) && !isBorder(2))
-				{
-					Daisy.daisyInit.pilot.rotate(-90);
-					Daisy.daisyInit.pilot.travel(15);
-					Daisy.daisyInit.pilot.rotate(-90);
-					turnLeft = true;
-					//forward() ?
-					return;
-				}
-				else if(isBorder(2)) //unerwartet. Vermutlich Fehler. ein Stueck zurueck fahren
-				{
-					Daisy.daisyInit.pilot.travel(-15);
-					return;
-				}
-				
-				//Nur Links wurde was erkannt
-				Daisy.daisyInit.pilot.steer(-25, 90, true);
-				while(isBorder(0) && !isBorder(1) && Daisy.daisyInit.pilot.isMoving() )
-				{
-					
-				}
-				Daisy.daisyInit.pilot.stop();
-				if(isBorder(1) || isBallmark(1))
-				{
-					checkTrack();
-					return;
-				}
-				//wieder "nach vorne" schauen
-				Daisy.nav.goTo(Daisy.poser.getPose().getX(), Daisy.poser.getPose().getY(), ausgangsPkt.getHeading());
-				//forward() ?
-				return;				
-				
-			}//Switch END
+			}
+			Daisy.daisyInit.pilot.travel(-13);
 		}
 		
+		Daisy.daisyInit.pilot.rotate(90);
+
+		if(!Daisy.rightSensed && !Daisy.leftSensed)
+		{
+			Daisy.daisyInit.pilot.rotate(Math.pow(-1, rand.nextInt(2) ) *dodge );
+		}
 		
+		if(Daisy.rightSensed && !Daisy.leftSensed)
+		{
+			Daisy.daisyInit.pilot.rotate(dodge);
+		}
+		
+		if(!Daisy.rightSensed && Daisy.leftSensed)
+		{
+			Daisy.daisyInit.pilot.rotate(-dodge);
+		}
+		
+		if(Daisy.rightSensed && Daisy.leftSensed)
+		{
+			Daisy.daisyInit.pilot.rotate(Math.pow(-1, rand.nextInt(2)) * 3 *dodge);
+		}
+		
+		Daisy.leftSensed = false;
+		Daisy.rightSensed = false;
+		return;
+	}
+		
+		/*
+		if (Daisy.daisyInit.pilot.getMovementIncrement() < 6)
+		{
+			if(warsch[0])
+				Daisy.daisyInit.pilot.rotate(dodge);
+			else
+				Daisy.daisyInit.pilot.rotate(-dodge);
+			
+			return;
+
+		}
+		if ( turn == 0)
+		{
+			if(warscheinlichkeit(false))//false bedeutet Rechtsabbiegung
+				Daisy.daisyInit.pilot.rotate(-Math.pow(-1, turn) * dodge);
+			else
+				Daisy.daisyInit.pilot.rotate(Math.pow(-1, turn) * dodge);
+		}
+		else
+		{
+			if(warscheinlichkeit(true))//false bedeutet Linksabbiegung
+				Daisy.daisyInit.pilot.rotate(-Math.pow(-1, turn) * dodge);
+			else
+				Daisy.daisyInit.pilot.rotate(Math.pow(-1, turn) * dodge);
+		}
+		
+		return;
+	}*/
+		/*
+		if (Daisy.leftSensed) 
+		{
+			if(warscheinlichkeit(false))
+				Daisy.daisyInit.pilot.rotate(-dodge);
+			else
+				Daisy.daisyInit.pilot.rotate(dodge);
+			//Daisy.daisyInit.pilot.travel(5);
+			//Daisy.daisyInit.pilot.rotate(90);
+			
+		} 
+		else if (Daisy.rightSensed) 
+		{
+			if(warscheinlichkeit(true))
+				Daisy.daisyInit.pilot.rotate(-dodge);
+			else
+				Daisy.daisyInit.pilot.rotate(dodge);
+			//Daisy.daisyInit.pilot.travel(5);
+			//Daisy.daisyInit.pilot.rotate(-90);
+		} 
+		else if (!Daisy.leftSensed && !Daisy.rightSensed)
+		{
+			//Blubb -> random turn here
+		}
+				
+		Daisy.leftSensed = false;
+		Daisy.rightSensed = false;
+		
+		return;
+
+	}*/
+	
+	//-------------------------------------------------------
+	public void checkSector()
+	{
 		
 	}
 	
-	//-------------------------------------------------------
+	public void createSector()
+	{
+		
+	}
 	
-	boolean isBallmark(int sensornummer)
+	public void adjustBackground()
+	{
+		
+	}
+	
+	public void adjustCollor()
+	{
+		
+	}
+	
+	public void checkColor()
+	{
+		
+	}
+	
+	public boolean isBallmark(int sensorNummer)
 	{
 		int[] colors=new int[3];
 		colors=getColors();
-		if(colors[sensornummer] == 1)
+		if(colors[sensorNummer] == 1)
 			return true;
 		return false;
 	}
 	
 	//-------------------------------------------------------
 	
-	boolean isBorder(int sensornummer)
+	public boolean isBorder(int sensorNummer)
 	{
 		int[] colors=new int[3];
 		colors=getColors();
-		if(colors[sensornummer] == 7)
+		if(colors[sensorNummer] == 7)
 			return true;
 		return false;
 	}

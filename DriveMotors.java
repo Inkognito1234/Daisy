@@ -9,10 +9,10 @@ public class DriveMotors
 	
 	//public DriveMotors motors = new DriveMotors();
 
-	final double oldSpeed = Daisy.daisyInit.driveSpeed;
-	double newSpeed = oldSpeed;
-	boolean poweredUp = false;						//gibt an ob man die Geschw. erhöht hat
-	int counter=0; 									//zählt die Anzahl von checkRise aufrufen (zur Blockadeerkennung)
+	//final double oldSpeed = Daisy.daisyInit.driveSpeed;
+	//double newSpeed = oldSpeed;
+	//boolean poweredUp = false;						//gibt an ob man die Geschw. erhöht hat
+	//int counter=0; 									//zählt die Anzahl von checkRise aufrufen (zur Blockadeerkennung)
 	
 	int[] colors = new int[3]; 
 	boolean complete = true;
@@ -60,7 +60,8 @@ public class DriveMotors
 	* @return5	 Wert= 3: (weiterhin) Steigung mit Erhöhung der Geschw. 
 	* 
 	*/
-	public int checkRise()
+	/*
+	public int checkRise() //funktioniert nicht wie gewollt, da Reifen durchdrehen
 	{
 
 		if( oldSpeed * Math.min(Daisy.daisyInit.riseTreshold, 0.999) > this.getSpeed() ) 
@@ -106,7 +107,7 @@ public class DriveMotors
 		else return 0;
 				
 	}
-	
+	*/
 	//----------------------------------------------------------------------
 	
 	void driveRise()
@@ -130,11 +131,13 @@ public class DriveMotors
 			//forward() ?
 			return;
 		}
-		else
+		else  //kein Gewackel -> gegen eine Wand gefahren anstatt Steigung 
+			//-> position nun falsch interpretiert -> versuchen zu korrigieren
 		{
-			Daisy.daisyInit.pilot.travel(5);
-			Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
-			Daisy.daisyInit.pilot.travel(-5);
+			Daisy.daisyInit.pilot.travel(8);
+			Daisy.daisyInit.pilot.rotate(-180);
+			Daisy.poser.setPose(ausgangsPkt);
+			Daisy.daisyInit.pilot.travel(-10);			
 			//forward() ?
 		}		
 	}
@@ -144,19 +147,23 @@ public class DriveMotors
 	void driveBack()
 	{
 		Random ran = new Random();
-		int turn = ran.nextInt();
+		int turn = ran.nextInt(2);
 		
-		Daisy.nav.goTo(0, 0, 0);
-		while(!Daisy.nav.pathCompleted() && Daisy.daisyInit.pilot.isMoving())
+		Daisy.nav.goTo(0, 0);
+		while(!Daisy.nav.pathCompleted())// && Daisy.daisyInit.pilot.isMoving())
 		{
 			if(Daisy.daisyInit.sonicSensor.getDistance() < 22 )
 			{
 				Daisy.daisyInit.pilot.stop();
 				Daisy.daisyInit.pilot.rotate( Math.pow(-1, turn) * 90);
-				Daisy.daisyInit.pilot.travel(15);
-				Daisy.nav.goTo(0, 0, 0);
+				Daisy.daisyInit.pilot.travel(20);
+				//Daisy.daisyInit.pilot.rotate( - Math.pow(-1, turn) * 90);
+				//Daisy.daisyInit.pilot.travel(15);
+				Daisy.nav.goTo(0, 0);
 			}
 		}
+		
+		Daisy.daisyInit.pilot.rotate(- Daisy.poser.getPose().getHeading());
 		
 	}
 	
@@ -190,12 +197,19 @@ public class DriveMotors
 						Daisy.daisyInit.pilot.travel(15, true);
 						while(Daisy.daisyInit.pilot.isMoving() )
 						{
-							if( Daisy.daisyInit.sensorLeft.getColorID() != 6 && Daisy.daisyInit.sensorFront.getColorID() != 6 && Daisy.daisyInit.sensorRight.getColorID() != 6 )
+							if( Daisy.daisyInit.sensorLeft.getColorID() != 6 && Daisy.daisyInit.sensorFront.getColorID() == 1 && Daisy.daisyInit.sensorRight.getColorID() == 1 )
 								break;
 						}
 						Daisy.daisyInit.pilot.stop();
-						if(Daisy.daisyInit.pilot.getMovementIncrement() < 13)
-							Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
+						if(Daisy.daisyInit.pilot.getMovementIncrement() <= 13)
+						{
+							Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+							while(!Daisy.nav.pathCompleted())
+							{
+								
+							}
+							Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
+						}
 						else
 						{
 							Daisy.daisyInit.pilot.rotate( -1 * Math.pow(-1, turn) * 90);
@@ -203,7 +217,6 @@ public class DriveMotors
 						}
 					}
 					
-					Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
 					Daisy.daisyInit.pilot.rotate( -1 * Math.pow(-1, turn) * 90);
 						
 					//Ist Weg frei?
@@ -212,15 +225,20 @@ public class DriveMotors
 						Daisy.daisyInit.pilot.travel(15, true);
 						while(Daisy.daisyInit.pilot.isMoving() )
 						{
-							if( Daisy.daisyInit.sensorLeft.getColorID() != 6 && Daisy.daisyInit.sensorFront.getColorID() != 6 && Daisy.daisyInit.sensorRight.getColorID() != 6 )
+							if( Daisy.daisyInit.sensorLeft.getColorID() == 1 && Daisy.daisyInit.sensorFront.getColorID() != 6 && Daisy.daisyInit.sensorRight.getColorID() == 1 )
 								break;
 						}
 						Daisy.daisyInit.pilot.stop();
-						if(Daisy.daisyInit.pilot.getMovementIncrement() < 13)
+						if(Daisy.daisyInit.pilot.getMovementIncrement() <= 13)
 						{
 							//Man kam links und rechts nicht vorbei
 							//Ab zum ausgangspunkt und umdrehen
-							Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
+							Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+							while(!Daisy.nav.pathCompleted())
+							{
+								
+							}
+							Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
 							Daisy.daisyInit.pilot.rotate(180);
 							return;
 						}
@@ -245,20 +263,32 @@ public class DriveMotors
 			case  2: 
 				//Objekt ist groß, aber man könnte links vorbei
 				Daisy.daisyInit.pilot.rotate(Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI) , true);
-				while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6)
+				while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1)
 				{
 					colors = Daisy.colorSens.getColors();
-					if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+					/*if(colors[0]==7)
+					{
+						Daisy.leftSensed = true;
+						Daisy.rightSensed = false;
+					}
+					if(colors[2]==7)
+					{
+						Daisy.leftSensed = false;
+						Daisy.rightSensed = true;
+					}*/
+					if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 					{
 						Daisy.daisyInit.pilot.stop();
+						complete = false;
 						if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
 						{
-							//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+							Daisy.grabber.collectBall(false); //AUFRUF DER BALLEINSAMMEL-FUNKTION!
+							Daisy.grabber.deliverBall();
 							return;
 						}
-						complete = false;
 						break;
 					}
+
 				}
 				
 				Daisy.daisyInit.pilot.stop();
@@ -274,28 +304,39 @@ public class DriveMotors
 				}
 				else
 				{
-					Daisy.daisyInit.pilot.travel(1.5* distanzen[1], true);
-					while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
+					Daisy.daisyInit.pilot.travel(18, true);
+					while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
 					{
 						colors = Daisy.colorSens.getColors();
-						if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+						/*if(colors[0]==7)
+						{
+							Daisy.leftSensed = true;
+							Daisy.rightSensed = false;
+						}
+						if(colors[2]==7)
+						{
+							Daisy.leftSensed = false;
+							Daisy.rightSensed = true;
+						}*/
+						if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 						{
 							Daisy.daisyInit.pilot.stop();
+							complete = false;
 							if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
 							{
-								//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+								Daisy.grabber.collectBall(false); //AUFRUF DER BALLEINSAMMEL-FUNKTION!
+								Daisy.grabber.deliverBall();
 								return;
 							}
-							complete = false;
-							break;
-						}
+						break;
+						}	
 					}
 					
 					Daisy.daisyInit.pilot.stop();
 					
 					//Falls waehrend der Fahrt wieder eine Linie UND man dadruch nicht weit genug kam
 					//Zum Ausgangspunkt, umdrehen und weiter.
-					if(!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= distanzen[1])
+					if(!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= 15)
 					{
 						complete = true;
 
@@ -305,7 +346,7 @@ public class DriveMotors
 					}
 					else
 					{
-						Daisy.daisyInit.pilot.rotate(- Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI) , true);
+						Daisy.daisyInit.pilot.rotate(- Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI));
 						//forward() ?
 						return;
 					}
@@ -318,18 +359,29 @@ public class DriveMotors
 				// Objekt ist groß, aber man könnte rechts vorbei:
 				
 				Daisy.daisyInit.pilot.rotate(- Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI) , true);
-				while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6)
+				while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1)
 				{
 					colors = Daisy.colorSens.getColors();
-					if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+					/*if(colors[0]==7)
+					{
+						Daisy.leftSensed = true;
+						Daisy.rightSensed = false;
+					}
+					if(colors[2]==7)
+					{
+						Daisy.leftSensed = false;
+						Daisy.rightSensed = true;
+					}*/
+					if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 					{
 						Daisy.daisyInit.pilot.stop();
+						complete = false;
 						if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
 						{
-							//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+							Daisy.grabber.collectBall(false); //AUFRUF DER BALLEINSAMMEL-FUNKTION!
+							Daisy.grabber.deliverBall();
 							return;
 						}
-						complete = false;
 						break;
 					}
 				}
@@ -347,19 +399,30 @@ public class DriveMotors
 				}
 				else
 				{
-					Daisy.daisyInit.pilot.travel(1.5* distanzen[1], true);
-					while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
+					Daisy.daisyInit.pilot.travel(18, true);
+					while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
 					{
 						colors = Daisy.colorSens.getColors();
-						if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+						/*if(colors[0]==7)
+						{
+							Daisy.leftSensed = true;
+							Daisy.rightSensed = false;
+						}
+						if(colors[2]==7)
+						{
+							Daisy.leftSensed = false;
+							Daisy.rightSensed = true;
+						}*/
+						if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 						{
 							Daisy.daisyInit.pilot.stop();
+							complete = false;
 							if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
 							{
-								//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+								Daisy.grabber.collectBall(false); //AUFRUF DER BALLEINSAMMEL-FUNKTION!
+								Daisy.grabber.deliverBall();
 								return;
 							}
-							complete = false;
 							break;
 						}
 					}
@@ -368,7 +431,7 @@ public class DriveMotors
 					
 					//Falls waehrend der Fahrt wieder eine Linie UND man dadruch nicht weit genug kam
 					//Zum Ausgangspunkt, umdrehen und weiter.
-					if(!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= distanzen[1])
+					if(!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= 15)
 					{
 						complete = true;
 
@@ -378,7 +441,7 @@ public class DriveMotors
 					}
 					else
 					{
-						Daisy.daisyInit.pilot.rotate(Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI) , true);
+						Daisy.daisyInit.pilot.rotate(Math.atan( (distanzen[1] / (1.5* Daisy.daisyInit.BALLDURCHMESSER)) * 180/Math.PI));
 						//forward() ?
 						return;
 					}
@@ -390,25 +453,37 @@ public class DriveMotors
 				//Objekt ist klein, vermutlich Ball:
 				if(Daisy.objScanner.isBall(distanzen)) 
 				{
-					//BALLEINSAMMELN PROGRAMMAUFRUF! MUSS NOCH PROGRAMMIERT WERDEN!
+					Daisy.grabber.collectBall(true); //true, weil Ultraschallsensor vorher ein Objekt erkannt hat
+					Daisy.grabber.deliverBall();
 					return;
 				}
 				else
 				{
 					//Versuchen Links vorbei zu kommen
 					Daisy.daisyInit.pilot.rotate(90, true);
-					while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6)
+					while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1)
 					{
 						colors = Daisy.colorSens.getColors();
-						if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+						/*if(colors[0]==7)
+						{
+							Daisy.leftSensed = true;
+							Daisy.rightSensed = false;
+						}
+						if(colors[2]==7)
+						{
+							Daisy.leftSensed = false;
+							Daisy.rightSensed = true;
+						}*/
+						if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 						{
 							Daisy.daisyInit.pilot.stop();
+							complete = false;
 							if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
 							{
-								//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+								Daisy.grabber.collectBall(false); //AUFRUF DER BALLEINSAMMEL-FUNKTION!
+								Daisy.grabber.deliverBall();
 								return;
 							}
-							complete = false;
 							break;
 						}
 					}
@@ -426,19 +501,29 @@ public class DriveMotors
 					else
 					{
 						Daisy.daisyInit.pilot.travel(20, true);
-						while (Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22) 
+						while (Daisy.daisyInit.pilot.isMoving() && colors[0] != 6 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22) 
 						{
 							colors = Daisy.colorSens.getColors();
-							if (colors[0] != 6 || colors[1] != 6 || colors[2] != 6) 
+							/*if(colors[0]==7)
+							{
+								Daisy.leftSensed = true;
+								Daisy.rightSensed = false;
+							}
+							if(colors[2]==7)
+							{
+								Daisy.leftSensed = false;
+								Daisy.rightSensed = true;
+							}*/
+							if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 							{
 								Daisy.daisyInit.pilot.stop();
-								if (colors[0] == 1 || colors[1] == 1 || colors[2] == 1) 
+								complete = false;
+								if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
 								{
-									// AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT
-									// WERDEN!
+									Daisy.grabber.collectBall(false); //AUFRUF DER BALLEINSAMMEL-FUNKTION!
+									Daisy.grabber.deliverBall();
 									return;
 								}
-								complete = false;
 								break;
 							}
 						}
@@ -450,8 +535,12 @@ public class DriveMotors
 						// Zum Ausgangspunkt, umdrehen und weiter.
 						if (!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= 15) 
 						{
-							Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(),
-									ausgangsPkt.getHeading());
+							Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+							while(!Daisy.nav.pathCompleted())
+							{
+								
+							}
+							Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
 							Daisy.daisyInit.pilot.rotate(180);
 							// forward() ?
 							return;
@@ -475,22 +564,37 @@ public class DriveMotors
 
 	void tryRight(Pose ausgangsPkt)
 	{
-		
-		Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
+		Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+		while(!Daisy.nav.pathCompleted())
+		{
+			
+		}
+		Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
 		Daisy.daisyInit.pilot.rotate(-90);
 		Daisy.daisyInit.pilot.travel(20, true);
-		while(Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
+		while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
 		{
 			colors = Daisy.colorSens.getColors();
-			if(colors[0] != 6 || colors[1] != 6 || colors[2] != 6)
+			/*if(colors[0]==7)
+			{
+				Daisy.leftSensed = true;
+				Daisy.rightSensed = false;
+			}
+			if(colors[2]==7)
+			{
+				Daisy.leftSensed = false;
+				Daisy.rightSensed = true;
+			}*/
+			if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 			{
 				Daisy.daisyInit.pilot.stop();
+				complete = false;
 				if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
 				{
-					//AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT WERDEN!
+					Daisy.grabber.collectBall(false); //AUFRUF DER BALLEINSAMMEL-FUNKTION!
+					Daisy.grabber.deliverBall();
 					return;
 				}
-				complete = false;
 				break;
 			}
 		}
@@ -501,7 +605,12 @@ public class DriveMotors
 		//Zum Ausgangspunkt, umdrehen und weiter.
 		if(!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= 15)
 		{
-			Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
+			Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+			while(!Daisy.nav.pathCompleted())
+			{
+				
+			}
+			Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
 			Daisy.daisyInit.pilot.rotate(180);
 			// forward() ?
 			return;
@@ -519,22 +628,37 @@ public class DriveMotors
 	void tryLeft(Pose ausgangsPkt) 
 	{
 
-		Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(),ausgangsPkt.getHeading());
-		Daisy.daisyInit.pilot.rotate(90, true);
+		Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+		while(!Daisy.nav.pathCompleted())
+		{
+			
+		}
+		Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
+		Daisy.daisyInit.pilot.rotate(90);
 		Daisy.daisyInit.pilot.travel(20, true);
-		while (Daisy.daisyInit.pilot.isMoving() && colors[0] == 6 && colors[1] == 6 && colors[2] == 6 && Daisy.daisyInit.sonicSensor.getDistance() > 22) 
+		while (Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22) 
 		{
 			colors = Daisy.colorSens.getColors();
-			if (colors[0] != 6 || colors[1] != 6 || colors[2] != 6) 
+			/*if(colors[0]==7)
+			{
+				Daisy.leftSensed = true;
+				Daisy.rightSensed = false;
+			}
+			if(colors[2]==7)
+			{
+				Daisy.leftSensed = false;
+				Daisy.rightSensed = true;
+			}*/
+			if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 			{
 				Daisy.daisyInit.pilot.stop();
-				if (colors[0] == 1 || colors[1] == 1 || colors[2] == 1) 
+				complete = false;
+				if(colors[0] == 1 || colors[1] == 1 || colors[2] == 1)
 				{
-					// AUFRUF DER BALLEINSAMMEL-FUNKTION! MUSS NOCH PROGRAMMIERT
-					// WERDEN!
+					Daisy.grabber.collectBall(false); //AUFRUF DER BALLEINSAMMEL-FUNKTION!
+					Daisy.grabber.deliverBall();
 					return;
 				}
-				complete = false;
 				break;
 			}
 		}
@@ -546,8 +670,12 @@ public class DriveMotors
 		// Zum Ausgangspunkt, umdrehen und weiter.
 		if (!complete && Daisy.daisyInit.pilot.getMovementIncrement() <= 15) 
 		{
-			Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(),
-					ausgangsPkt.getHeading());
+			Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+			while(!Daisy.nav.pathCompleted())
+			{
+				
+			}
+			Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
 			Daisy.daisyInit.pilot.rotate(180);
 			// forward() ?
 			return;
@@ -555,7 +683,7 @@ public class DriveMotors
 		else 
 		{
 			Daisy.daisyInit.pilot.rotate(-90);
-			// forward() ?
+
 			return;
 		}
 	}

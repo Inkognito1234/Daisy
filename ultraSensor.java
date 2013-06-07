@@ -116,8 +116,8 @@ public class ultraSensor
 	public boolean isBall(double [] distanzen)
 	{
 		
-		Daisy.daisyInit.pilot.setTravelSpeed(15);
-		Daisy.daisyInit.middleMotor.rotate(40); //Macht Greifarm auf
+		Daisy.daisyInit.pilot.setTravelSpeed(10);
+		// sind schon offen // Daisy.daisyInit.middleMotor.rotate(40); //Macht Greifarm auf
 		Daisy.daisyInit.pilot.travel(distanzen[1], true);
 		while(Daisy.daisyInit.pilot.isMoving())
 		{
@@ -129,8 +129,8 @@ public class ultraSensor
 		}			
 
 		Daisy.daisyInit.pilot.travel(-distanzen[1]);
-		Daisy.daisyInit.middleMotor.rotate(-40); //Schliesst Greifarm
-		Daisy.daisyInit.pilot.setTravelSpeed(Daisy.motors.oldSpeed);
+		//sollen offen bleiben// Daisy.daisyInit.middleMotor.rotate(-40); //Schliesst Greifarm
+		Daisy.daisyInit.pilot.setTravelSpeed(Daisy.daisyInit.driveSpeed);
 		return false;
 
 		
@@ -192,7 +192,7 @@ public class ultraSensor
 	
 	
 	//Ausrichten falls Daisy schraeg an die Steigung angefahren kam
-	void adjust(double[] distanzen)
+	public void adjust(double[] distanzen)
 	{
 		//Links weiter weg als rechts -> Daisy kam von links auf die Steigung zu
 		if(distanzen[0] < distanzen[2])
