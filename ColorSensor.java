@@ -70,7 +70,7 @@ public class ColorSensor
 			return;
 		}
 		
-		Daisy.daisyInit.pilot.travel(-13);
+		Daisy.daisyInit.pilot.travel(-7);
 		
 		Daisy.daisyInit.pilot.rotate(90,true);
 		while(Daisy.daisyInit.pilot.isMoving())
@@ -122,7 +122,8 @@ public class ColorSensor
 
 		if(!Daisy.rightSensed && !Daisy.leftSensed)
 		{
-			Daisy.daisyInit.pilot.rotate(Math.pow(-1, rand.nextInt(2) ) *dodge );
+			Daisy.sector.checkSector();
+			//Daisy.daisyInit.pilot.rotate(Math.pow(-1, rand.nextInt(2) ) *dodge );
 		}
 		
 		if(Daisy.rightSensed && !Daisy.leftSensed)
@@ -137,6 +138,7 @@ public class ColorSensor
 		
 		if(Daisy.rightSensed && Daisy.leftSensed)
 		{
+			//Daisy.sector.checkSector();
 			Daisy.daisyInit.pilot.rotate(Math.pow(-1, rand.nextInt(2)) * 3 *dodge);
 		}
 		

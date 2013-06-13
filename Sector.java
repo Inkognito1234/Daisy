@@ -4,40 +4,41 @@ import java.util.Random;
 public class Sector 
 {
 
-	protected static int [][] sector1 = new int[256][256];
-	protected static int [][] sector2 = new int[256][256];
-	protected static int [][] sector3 = new int[256][256];
-	protected static int [][] sector4 = new int[256][256];
+	static final int FELD = 32;
+	protected static short [][] sector1 = new short[FELD][FELD];
+	protected static short [][] sector2 = new short[FELD][FELD];
+	protected static short [][] sector3 = new short[FELD][FELD];
+	protected static short [][] sector4 = new short[FELD][FELD];
 	
     public void initSector()
     {
-    	for (int i=0 ; i < 256 ; i++)
-    		for(int j=0 ; j < 256 ; j++ )
+    	for (int i=0 ; i < FELD ; i++)
+    		for(int j=0 ; j < FELD ; j++ )
     			sector1[i][j] = 0;
     	
-    	for (int i=0 ; i < 256 ; i++)
-    		for(int j=0 ; j < 256 ; j++ )
+    	for (int i=0 ; i < FELD ; i++)
+    		for(int j=0 ; j < FELD ; j++ )
     			sector2[i][j] = 0;
     	
-    	for (int i=0 ; i < 256 ; i++)
-    		for(int j=0 ; j < 256 ; j++ )
+    	for (int i=0 ; i < FELD ; i++)
+    		for(int j=0 ; j < FELD ; j++ )
     			sector3[i][j] = 0;
     	
-    	for (int i=0 ; i < 256 ; i++)
-    		for(int j=0 ; j < 256 ; j++ )
+    	for (int i=0 ; i < FELD ; i++)
+    		for(int j=0 ; j < FELD ; j++ )
     			sector4[i][j] = 0;
     }
 	
-	public int getSector(int x, int y)
+	public short getSector(int x, int y)
 	{
 		if(x >= 0 && y >= 0)
 			return sector1[x][y];
 		else if(x < 0 && y >= 0)
-			return sector2[x][y];
+			return sector2[-x][y];
 		else if(x <= 0 && y < 0)
-			return sector3[x][y];
+			return sector3[-x][-y];
 		else if(x > 0 && y < 0)
-			return sector4[x][y];
+			return sector4[x][-y];
 		
 		return -13; //sollte nicht vorkommen
 	}
@@ -52,27 +53,27 @@ public class Sector
 				sector1[x][y]++;
 		else if (x < 0 && y >= 0)
 			if(hasObstacle)
-				sector2[x][y] = -1;
+				sector2[-x][y] = -1;
 			else
-				sector2[x][y]++;
+				sector2[-x][y]++;
 		else if (x <= 0 && y < 0)
 			if(hasObstacle)
-				sector3[x][y] = -1;
+				sector3[-x][-y] = -1;
 			else
-				sector3[x][y]++;
+				sector3[-x][-y]++;
 		else if (x > 0 && y < 0)
 			if(hasObstacle)
-				sector4[x][y] = -1;
+				sector4[x][-y] = -1;
 			else
-				sector4[x][y]++;
+				sector4[x][-y]++;
 	}
 	
 	//---------------------------------------------------
 	
-	public int ceckSector()  // gibt Winkel zurück um in die entsprechende Richtung zu drehen
+	public int checkSector()  // gibt Winkel zurück um in die entsprechende Richtung zu drehen
 	{
-		 int x = (int) Daisy.poser.getPose().getX() / 5;
-		 int y = (int) Daisy.poser.getPose().getY() / 5;
+		 int x = (int)( Daisy.poser.getPose().getX() / 25 );
+		 int y = (int)( Daisy.poser.getPose().getY() / 25 );
 		 int quadrant = 0;
 		 
 			if(x >= 0 && y >= 0)
@@ -106,7 +107,7 @@ public class Sector
 	
 	// gibt Winkel zurück um in die entsprechende Richtung zu drehen
 	// Funktion nur zur vereinfachung der Methode oben
-	public int decideSection(int[][] sector, int x, int y) 
+	public int decideSection(short[][] sector, int x, int y) 
 	{
 		Random rand = new Random();
 		
