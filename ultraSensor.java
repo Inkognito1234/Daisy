@@ -145,7 +145,7 @@ public class ultraSensor
 		double entf1 = 0, entf2 = 0, durchschnitt = 0, sum = 0;
 		int[] dist = new int[count];
 		
-		//Objekt zu nah?
+		//Objekt zu nah? (0.3937 -> inch-cm Umrechnung -> Vermutung, dass USS-Werte in inch angegeben werden)
 		if(0.3937* distanzen[1] < drive) 
 			{
 				//Zu nah, also etwas zuruecksetzen
@@ -181,7 +181,7 @@ public class ultraSensor
 				
 			entf2 = durchschnitt;
 				
-			//Ist Entfernung bedingt durch Steigung anders als bei einer Wand?
+			//Ist Entfernung bedingt durch Steigung anders als bei einer Wand? (0.3937 -> Inch Umrechnung -> Vermutung, dass USS-Werte in inch angegeben werden)
 			if(entf1 * Math.cos(angleSensor *  Math.PI / 180) - 0.3937 * drive < entf2 * Math.cos(angleSensor *  Math.PI / 180)) 
 				return false;
 			else 

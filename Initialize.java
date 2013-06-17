@@ -19,8 +19,8 @@ public class Initialize
 	public final double BALLDURCHMESSER = 8;
 	
 	//Piloten definieren
-	
-	public DifferentialPilot pilot = new DifferentialPilot(RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A);
+	public DifferentialPilot pilot = new DifferentialPilot(RADDURCHMESSER+0.05, RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A, false);
+	//public DifferentialPilot pilot = new DifferentialPilot(RADDURCHMESSER, RADABSTAND, Motor.B, Motor.A);
 	
 	//Ultraschall sensor definieren
 	public UltrasonicSensor sonicSensor = new UltrasonicSensor( SensorPort.S1);

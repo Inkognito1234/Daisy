@@ -208,15 +208,7 @@ public class ColorSensor
 	}*/
 	
 	//-------------------------------------------------------
-	public void checkSector()
-	{
-		
-	}
-	
-	public void createSector()
-	{
-		
-	}
+
 	
 	public void adjustBackground()
 	{

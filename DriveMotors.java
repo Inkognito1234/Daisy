@@ -114,6 +114,7 @@ public class DriveMotors
 	{
 		boolean gewackel = false;
 		Pose ausgangsPkt = Daisy.poser.getPose();
+		float traveled = 0;
 		
 		Daisy.daisyInit.pilot.travel(-8);
 		Daisy.daisyInit.pilot.rotate(180);
@@ -121,7 +122,26 @@ public class DriveMotors
 		while(Daisy.daisyInit.pilot.isMoving())
 		{
 			//bei Steigung kommt der Boden nah an Sensor (Erwartung)
-			if(Daisy.daisyInit.sonicSensor.getDistance() < 20)
+			colors = Daisy.colorSens.getColors();
+			if(colors[0] == 7)
+			{
+				traveled = traveled + Daisy.daisyInit.pilot.getMovementIncrement();
+				Daisy.daisyInit.pilot.stop();
+				Daisy.daisyInit.pilot.travel(7);
+				Daisy.daisyInit.pilot.rotate(45);
+				Daisy.daisyInit.pilot.travel(-100 + traveled -7);
+				
+			}
+			if(colors[2] == 7)
+			{
+				traveled = traveled + Daisy.daisyInit.pilot.getMovementIncrement();
+				Daisy.daisyInit.pilot.stop();
+				Daisy.daisyInit.pilot.travel(7);
+				Daisy.daisyInit.pilot.rotate(-45);
+				Daisy.daisyInit.pilot.travel(-100 + traveled -7);
+				
+			}
+			if(Daisy.daisyInit.sonicSensor.getDistance() < 21)
 				gewackel =true;
 		}
 		
@@ -157,8 +177,7 @@ public class DriveMotors
 				Daisy.daisyInit.pilot.stop();
 				Daisy.daisyInit.pilot.rotate( Math.pow(-1, turn) * 90);
 				Daisy.daisyInit.pilot.travel(20);
-				//Daisy.daisyInit.pilot.rotate( - Math.pow(-1, turn) * 90);
-				//Daisy.daisyInit.pilot.travel(15);
+
 				Daisy.nav.goTo(0, 0);
 			}
 		}
@@ -266,16 +285,7 @@ public class DriveMotors
 				while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1)
 				{
 					colors = Daisy.colorSens.getColors();
-					/*if(colors[0]==7)
-					{
-						Daisy.leftSensed = true;
-						Daisy.rightSensed = false;
-					}
-					if(colors[2]==7)
-					{
-						Daisy.leftSensed = false;
-						Daisy.rightSensed = true;
-					}*/
+
 					if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 					{
 						Daisy.daisyInit.pilot.stop();
@@ -308,16 +318,7 @@ public class DriveMotors
 					while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
 					{
 						colors = Daisy.colorSens.getColors();
-						/*if(colors[0]==7)
-						{
-							Daisy.leftSensed = true;
-							Daisy.rightSensed = false;
-						}
-						if(colors[2]==7)
-						{
-							Daisy.leftSensed = false;
-							Daisy.rightSensed = true;
-						}*/
+
 						if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 						{
 							Daisy.daisyInit.pilot.stop();
@@ -362,16 +363,7 @@ public class DriveMotors
 				while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1)
 				{
 					colors = Daisy.colorSens.getColors();
-					/*if(colors[0]==7)
-					{
-						Daisy.leftSensed = true;
-						Daisy.rightSensed = false;
-					}
-					if(colors[2]==7)
-					{
-						Daisy.leftSensed = false;
-						Daisy.rightSensed = true;
-					}*/
+
 					if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 					{
 						Daisy.daisyInit.pilot.stop();
@@ -403,16 +395,7 @@ public class DriveMotors
 					while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
 					{
 						colors = Daisy.colorSens.getColors();
-						/*if(colors[0]==7)
-						{
-							Daisy.leftSensed = true;
-							Daisy.rightSensed = false;
-						}
-						if(colors[2]==7)
-						{
-							Daisy.leftSensed = false;
-							Daisy.rightSensed = true;
-						}*/
+
 						if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 						{
 							Daisy.daisyInit.pilot.stop();
@@ -464,16 +447,7 @@ public class DriveMotors
 					while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1)
 					{
 						colors = Daisy.colorSens.getColors();
-						/*if(colors[0]==7)
-						{
-							Daisy.leftSensed = true;
-							Daisy.rightSensed = false;
-						}
-						if(colors[2]==7)
-						{
-							Daisy.leftSensed = false;
-							Daisy.rightSensed = true;
-						}*/
+
 						if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 						{
 							Daisy.daisyInit.pilot.stop();
@@ -501,19 +475,10 @@ public class DriveMotors
 					else
 					{
 						Daisy.daisyInit.pilot.travel(20, true);
-						while (Daisy.daisyInit.pilot.isMoving() && colors[0] != 6 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22) 
+						while (Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 21) 
 						{
 							colors = Daisy.colorSens.getColors();
-							/*if(colors[0]==7)
-							{
-								Daisy.leftSensed = true;
-								Daisy.rightSensed = false;
-							}
-							if(colors[2]==7)
-							{
-								Daisy.leftSensed = false;
-								Daisy.rightSensed = true;
-							}*/
+
 							if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 							{
 								Daisy.daisyInit.pilot.stop();
@@ -572,19 +537,10 @@ public class DriveMotors
 		Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
 		Daisy.daisyInit.pilot.rotate(-90);
 		Daisy.daisyInit.pilot.travel(20, true);
-		while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22)
+		while(Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 21)
 		{
 			colors = Daisy.colorSens.getColors();
-			/*if(colors[0]==7)
-			{
-				Daisy.leftSensed = true;
-				Daisy.rightSensed = false;
-			}
-			if(colors[2]==7)
-			{
-				Daisy.leftSensed = false;
-				Daisy.rightSensed = true;
-			}*/
+
 			if(colors[1] != 6 || colors[0] == 1 || colors[2] == 1)
 			{
 				Daisy.daisyInit.pilot.stop();
@@ -636,7 +592,7 @@ public class DriveMotors
 		Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
 		Daisy.daisyInit.pilot.rotate(90);
 		Daisy.daisyInit.pilot.travel(20, true);
-		while (Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 22) 
+		while (Daisy.daisyInit.pilot.isMoving() && colors[0] != 1 && colors[1] == 6 && colors[2] != 1 && Daisy.daisyInit.sonicSensor.getDistance() > 21) 
 		{
 			colors = Daisy.colorSens.getColors();
 			/*if(colors[0]==7)
