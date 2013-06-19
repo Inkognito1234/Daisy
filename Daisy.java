@@ -2,6 +2,7 @@ import lejos.nxt.Sound;
 import lejos.robotics.localization.OdometryPoseProvider;
 
 import lejos.robotics.navigation.Navigator;
+import lejos.robotics.navigation.Pose;
 
 
 public class Daisy 
@@ -27,20 +28,18 @@ public class Daisy
 		int[] colors=new int[3];
 		boolean sensed = false;
 		
+		Pose aktuellerPkt = new Pose();
+		
 		sector.initSector();
 		
 		daisyInit.init();
-	
+
 		sector.setSector((int)poser.getPose().getX() / 25, (int)poser.getPose().getY() / 25, false);
 		
-		daisyInit.pilot.forward();
-		while(daisyInit.pilot.getMovementIncrement() < 150)
-		{
-			
-		}
 		while (true)
 		{
 			daisyInit.pilot.forward();
+			aktuellerPkt = poser.getPose();
 			
 			do
 			{
@@ -54,7 +53,6 @@ public class Daisy
 					sector.setSector(lastSectionX , lastSectionY , false);
 				}
 
-				
 				if(daisyInit.pilot.getMovementIncrement() >= 15)
 				{
 					daisyInit.pilot.stop();
@@ -65,30 +63,56 @@ public class Daisy
 						if(distMessung <= 21)
 						{
 							daisyInit.pilot.stop();
+							daisyInit.pilot.rotate(5);
+							sensed = true;
+							break;
+						}
+					}
+
+					if (sensed) 
+					{
+						sensed = false;
+						distanzen = objScanner.scanObject(distMessung);
+						art = objScanner.whatKind(distanzen);
+						if (art == 4)
+							break;
+					}
+					
+					daisyInit.pilot.rotate(aktuellerPkt.getHeading() - poser.getPose().getHeading());
+					daisyInit.pilot.rotate(45, true);
+					while(daisyInit.pilot.isMoving())
+					{
+						distMessung=daisyInit.sonicSensor.getDistance();
+						if(distMessung <= 21)
+						{
+							daisyInit.pilot.stop();
+							daisyInit.pilot.rotate(-5);
 							sensed = true;
 							break;
 						}
 					}
 					
-					if(!sensed)
+					if (sensed)
 					{
-						daisyInit.pilot.rotate(90, true);
-						while(daisyInit.pilot.isMoving())
+						sensed = false;
+						distanzen = objScanner.scanObject(distMessung);
+						art = objScanner.whatKind(distanzen);
+						if (art == 4)
+							break;
+						else
 						{
-							distMessung=daisyInit.sonicSensor.getDistance();
-							if(distMessung <= 21)
-							{
-								daisyInit.pilot.stop();
-								sensed = true;
-								break;
-							}
+							distMessung = 255;
+							daisyInit.pilot.rotate(aktuellerPkt.getHeading() - poser.getPose().getHeading());
+							daisyInit.pilot.forward();
 						}
 					}
-					
-					if(sensed)
-						sensed = false;
 					else
-						daisyInit.pilot.rotate(-45);
+					{
+						daisyInit.pilot.rotate(aktuellerPkt.getHeading() - poser.getPose().getHeading());
+						daisyInit.pilot.forward();
+					}
+						
+					
 				}
 				else
 					distMessung=daisyInit.sonicSensor.getDistance();
@@ -109,7 +133,11 @@ public class Daisy
 			}
 			else
 			{
-				colorSens.checkTrack();
+				if( colorSens.checkColor(colors[1]) == 7 )
+				{
+					sector.setSector((int)poser.getPose().getX() / 25, (int)poser.getPose().getY() / 25, true);
+					colorSens.checkTrack();
+				}
 			}
 
 		}

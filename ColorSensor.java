@@ -220,9 +220,21 @@ public class ColorSensor
 		
 	}
 	
-	public void checkColor()
+	public int checkColor(int colorID)
 	{
+		if( Daisy.daisyInit.sensorFront.getRawColor().getBackground() > 1000 
+				&& Daisy.daisyInit.sensorFront.getRawColor().getRed() > 1000
+				&& Daisy.daisyInit.sensorFront.getRawColor().getGreen() > 1000
+				&& Daisy.daisyInit.sensorFront.getRawColor().getBlue() > 1000)
+		return 6; //sehr helles Licht -> werte > 1000, wen weiß unter Sensor
 		
+		if( Daisy.daisyInit.sensorFront.getRawColor().getBackground() > 900 
+				&& Daisy.daisyInit.sensorFront.getRawColor().getRed() > 900
+				&& Daisy.daisyInit.sensorFront.getRawColor().getGreen() > 900
+				&& Daisy.daisyInit.sensorFront.getRawColor().getBlue() > 900)
+			return 7; //sehr helles Licht -> Werte bei ca 950, wenn schwarz unter Sensor
+		
+		return colorID;
 	}
 	
 	public boolean isBallmark(int sensorNummer)

@@ -21,7 +21,7 @@ public class ultraSensor
 		//System.out.println("Blubb: " + Math.atan(Daisy.daisyInit.BALLDURCHMESSER / lastDist) * 360/(2*Math.PI) +"\n");
 
 		Daisy.daisyInit.pilot.stop();
-		Delay.msDelay(75);
+		Delay.msDelay(125);
 		
 		//Berechnung der Entfernung nach vorne:
 		
@@ -118,7 +118,7 @@ public class ultraSensor
 		
 		Daisy.daisyInit.pilot.setTravelSpeed(10);
 		// sind schon offen // Daisy.daisyInit.middleMotor.rotate(40); //Macht Greifarm auf
-		Daisy.daisyInit.pilot.travel(distanzen[1], true);
+		Daisy.daisyInit.pilot.travel(distanzen[1]*1.2, true);
 		while(Daisy.daisyInit.pilot.isMoving())
 		{
 			if(Daisy.daisyInit.sensorFront.getColorID() == 1)
@@ -146,7 +146,7 @@ public class ultraSensor
 		int[] dist = new int[count];
 		
 		//Objekt zu nah? (0.3937 -> inch-cm Umrechnung -> Vermutung, dass USS-Werte in inch angegeben werden)
-		if(0.3937* distanzen[1] < drive) 
+		if(distanzen[1] < 18) 
 			{
 				//Zu nah, also etwas zuruecksetzen
 				Daisy.daisyInit.pilot.travel(-1.1*drive);

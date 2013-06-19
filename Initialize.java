@@ -43,8 +43,8 @@ public class Initialize
 	//Variablen zum initialisieren
 	public final double driveSpeed=10 ;// drive= cm/s ; spin=Grad/s (Motorleistung)
 
-	public final double spinSpeed=90;
-	public final int volume=100, grabSpeed=150;
+	public final double spinSpeed=45;
+	public final int volume=100, grabSpeed=75;
 	//final int blockadeNachVersuchen = 7;		// Hier Zahl einsetzen die bestimmt wie oft checkRise() ausgeführt wird, 
 										// bis es als Blockade und nicht als Steigung interpretiert wird
 	//final double riseTreshold = 0.97;			// bestimmt ab wann checkRise die Geschwindigkeit erhöht (Werte < 1); 

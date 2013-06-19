@@ -48,22 +48,22 @@ public class Sector
 			
 		if (x >= 0 && y >= 0)
 			if(hasObstacle)
-				sector1[x][y] = -1;
+				setFrontBlack(sector1 , x , y);
 			else
 				sector1[x][y]++;
 		else if (x < 0 && y >= 0)
 			if(hasObstacle)
-				sector2[-x][y] = -1;
+				setFrontBlack(sector2 , x , y);
 			else
 				sector2[-x][y]++;
 		else if (x <= 0 && y < 0)
 			if(hasObstacle)
-				sector3[-x][-y] = -1;
+				setFrontBlack(sector3 , x , y);
 			else
 				sector3[-x][-y]++;
 		else if (x > 0 && y < 0)
 			if(hasObstacle)
-				sector4[x][-y] = -1;
+				setFrontBlack(sector4 , x , y);
 			else
 				sector4[x][-y]++;
 	}
@@ -113,10 +113,13 @@ public class Sector
 		
 		if (Daisy.poser.getPose().getHeading() >= 315 && Daisy.poser.getPose().getHeading() <= 45) 
 		{
-			if (sector[x][y + 1] == sector[x][Math.max(0, y - 1)])
-				return (int) Math.max(90, Math.pow(-1, rand.nextInt(2) *270) );
+			if (sector[x][y + 1] == -1 && sector[x][Math.max(0, y - 1)] == -1 ) //links und rechts schwarz
+				return 180 - (int) Daisy.poser.getPose().getHeading();			//umdrehen				
+				
+			if (sector[x][y + 1] == sector[x][Math.max(0, y - 1)])			//links und rechts gleichwertig
+				return (int) Math.max(90, Math.pow(-1, rand.nextInt(2) *270) ); //random-Drehung
 
-			if (sector[x][y + 1] < sector[x][Math.max(0, y - 1)])
+			if (sector[x][y + 1] < sector[x][Math.max(0, y - 1)] && sector[x][y + 1] != -1 ) //links kleiner als rechts
 				return 90 - (int) Daisy.poser.getPose().getHeading(); // Drehung nach oben
 			else
 				return 270 - (int) Daisy.poser.getPose().getHeading(); // Drehung nach unten
@@ -124,10 +127,13 @@ public class Sector
 
 		if (Daisy.poser.getPose().getHeading() > 45 && Daisy.poser.getPose().getHeading() <= 135) 
 		{
+			if (sector[Math.max(0, x - 1)][y] == -1 && sector[x + 1][y] == -1 ) //links und rechts schwarz
+				return 270 -(int) Daisy.poser.getPose().getHeading();			//umdrehen	
+			
 			if (sector[Math.max(0, x - 1)][y] == sector[x + 1][y])
 				return (int) Math.max(0, Math.pow(-1, rand.nextInt(2) *180) );
 
-			if (sector[Math.max(0, x - 1)][y] < sector[x + 1][y])
+			if (sector[Math.max(0, x - 1)][y] < sector[x + 1][y] && sector[Math.max(0, x - 1)][y] != -1) //links kleiner als rechts
 				return 180 - (int) Daisy.poser.getPose().getHeading(); // Drehung nach links
 			else
 				return 0 - (int) Daisy.poser.getPose().getHeading(); // Drehung nach rechts
@@ -135,10 +141,13 @@ public class Sector
 
 		if (Daisy.poser.getPose().getHeading() > 135 && Daisy.poser.getPose().getHeading() <= 225) 
 		{
+			if (sector[x][y + 1] == -1 && sector[x][Math.max(0, y - 1)] == -1 ) //links und rechts schwarz
+				return 0 - (int) Daisy.poser.getPose().getHeading();			//umdrehen		
+			
 			if (sector[x][y + 1] == sector[x][Math.max(0, y - 1)])
 				return (int) Math.max(90, Math.pow(-1, rand.nextInt(2) *270) );
 
-			if (sector[x][y + 1] < sector[x][Math.max(0, y - 1)])
+			if (sector[x][y + 1] < sector[x][Math.max(0, y - 1)] && sector[x][y + 1] != -1)
 				return 90 - (int) Daisy.poser.getPose().getHeading(); // Drehung nach oben
 			else
 				return 270 - (int) Daisy.poser.getPose().getHeading(); // Drehung nach unten
@@ -146,15 +155,41 @@ public class Sector
 
 		if (Daisy.poser.getPose().getHeading() > 225 && Daisy.poser.getPose().getHeading() < 315) 
 		{
+			if (sector[Math.max(0, x - 1)][y] == -1 && sector[x + 1][y] == -1 )
+				return 90 - (int) Daisy.poser.getPose().getHeading();			//umdrehen		
+			
 			if (sector[Math.max(0, x - 1)][y] == sector[x + 1][y])
 				return (int) Math.max(0, Math.pow(-1, rand.nextInt(2) *180) );
 
-			if (sector[Math.max(0, x - 1)][y] < sector[x + 1][y])
+			if (sector[Math.max(0, x - 1)][y] < sector[x + 1][y] && sector[Math.max(0, x - 1)][y] != -1)
 				return 180 - (int) Daisy.poser.getPose().getHeading(); // Drehung nach links
 			else
 				return 0 - (int) Daisy.poser.getPose().getHeading(); // Drehung nach rechts
 		}
 
 		return 0;
+	}
+	
+	public void setFrontBlack(short[][] sector, int x, int y)
+	{
+		if (Daisy.poser.getPose().getHeading() >= 340 && Daisy.poser.getPose().getHeading() <= 20) 
+		{
+			sector[x + 1][y] = -1;
+		}
+
+		if (Daisy.poser.getPose().getHeading() > 70 && Daisy.poser.getPose().getHeading() <= 110) 
+		{
+			sector[x][y + 1] = -1;
+		}
+
+		if (Daisy.poser.getPose().getHeading() > 160 && Daisy.poser.getPose().getHeading() <= 200) 
+		{
+			sector[x + 1][y] = -1;
+		}
+
+		if (Daisy.poser.getPose().getHeading() > 250 && Daisy.poser.getPose().getHeading() < 290) 
+		{
+			sector[x][y + 1] = -1;
+		}
 	}
 }

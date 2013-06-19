@@ -13,7 +13,7 @@ public class GrabMotor
 			
 		}
 		Daisy.daisyInit.middleMotor.stop();
-		Daisy.daisyInit.middleMotor.rotate(40);
+		Daisy.daisyInit.middleMotor.rotate(50);
 	}
 	
 	//fromUSS: Falls Ultraschallsensor das eingeleitet hat
@@ -175,9 +175,11 @@ public class GrabMotor
 	{
 		//Faehrt zum Anfang, dreht sich um, laesst Ball etwas weiter vorne fallen, 
 		//faehrt zum Anfang und richtet seine Zange wieder aus
+		Daisy.daisyInit.middleMotor.backward();
 		Daisy.motors.driveBack();
 		Daisy.daisyInit.pilot.rotate(180);
 		Daisy.daisyInit.pilot.travel(20);
+		Daisy.daisyInit.middleMotor.stop();
 		Daisy.daisyInit.middleMotor.rotate(40);
 		Daisy.daisyInit.pilot.travel(-20);
 		Daisy.daisyInit.pilot.rotate(-180);
