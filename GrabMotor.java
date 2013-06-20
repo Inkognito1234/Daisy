@@ -1,3 +1,4 @@
+import lejos.nxt.Sound;
 import lejos.robotics.navigation.Pose;
 
 
@@ -20,6 +21,7 @@ public class GrabMotor
 	void collectBall(boolean fromUSS)
 	{
 		Pose ausgangsPkt = Daisy.poser.getPose();
+		Daisy.punktImParcours = ausgangsPkt;
 		
 		if(fromUSS)
 		{
@@ -41,7 +43,7 @@ public class GrabMotor
 			{
 				//Fahre ein Stueck zurueck und drehe nach links bis fertig 
 				//oder ein Obj. vom USS erkannt
-				Daisy.daisyInit.pilot.travel(-15);
+				Daisy.daisyInit.pilot.travel(-20);
 				Daisy.daisyInit.pilot.rotate(60, true);
 				do
 				{
@@ -67,8 +69,9 @@ public class GrabMotor
 				{
 					//Falls kein Ball vom USS gefunden wurde, zurueck zum Ausgangspunkt
 					//Stueck vor fahren, damit die Markierung nicht nochmal erkannt wird
-					Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
-					Daisy.daisyInit.pilot.travel(15);
+					Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+					Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
+					Daisy.daisyInit.pilot.travel(20);
 					return;
 				}
 			}
@@ -76,7 +79,7 @@ public class GrabMotor
 			{
 				//Fahre ein Stueck zurueck und drehe nach rechts bis fertig 
 				//oder ein Obj. vom USS erkannt
-				Daisy.daisyInit.pilot.travel(-10);
+				Daisy.daisyInit.pilot.travel(-15);
 				Daisy.daisyInit.pilot.rotate(-40, true);
 				do
 				{
@@ -126,8 +129,9 @@ public class GrabMotor
 					else
 					{
 						//Kein Ball vorhanden
-						Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
-						Daisy.daisyInit.pilot.travel(15);
+						Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+						Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
+						Daisy.daisyInit.pilot.travel(20);
 						return;
 					}
 				}
@@ -163,8 +167,9 @@ public class GrabMotor
 				{
 					//Falls kein Ball vom USS gefunden wurde, zurueck zum Ausgangspunkt
 					//Stueck vor fahren, damit die Markierung nicht nochmal erkannt wird
-					Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY(), ausgangsPkt.getHeading());
-					Daisy.daisyInit.pilot.travel(15);
+					Daisy.nav.goTo(ausgangsPkt.getX(), ausgangsPkt.getY());
+					Daisy.daisyInit.pilot.rotate(ausgangsPkt.getHeading() - Daisy.poser.getPose().getHeading());
+					Daisy.daisyInit.pilot.travel(20);
 					return;
 				}
 			}
@@ -176,14 +181,21 @@ public class GrabMotor
 		//Faehrt zum Anfang, dreht sich um, laesst Ball etwas weiter vorne fallen, 
 		//faehrt zum Anfang und richtet seine Zange wieder aus
 		Daisy.daisyInit.middleMotor.backward();
-		Daisy.motors.driveBack();
+		Daisy.motors.driveBack(0 , 0, 0);
 		Daisy.daisyInit.pilot.rotate(180);
 		Daisy.daisyInit.pilot.travel(20);
 		Daisy.daisyInit.middleMotor.stop();
 		Daisy.daisyInit.middleMotor.rotate(40);
+		
+		Sound.setVolume(100);
+		Sound.playSample(Daisy.daisyInit.sound1UP, Daisy.daisyInit.volume);	// spielt File ab mit max Lautstaerke	
+		Sound.setVolume(20);
+		
 		Daisy.daisyInit.pilot.travel(-20);
 		Daisy.daisyInit.pilot.rotate(-180);
 		this.adjustGrabber();
+		
+		Daisy.motors.driveBack(Daisy.punktImParcours.getX(), Daisy.punktImParcours.getX(), Daisy.punktImParcours.getHeading());
 		
 	}
 }

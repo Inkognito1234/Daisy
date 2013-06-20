@@ -19,6 +19,7 @@ public class Daisy
 	public static Navigator nav=new Navigator(daisyInit.pilot);
 
 	public static boolean rightSensed = false, leftSensed = false;
+	public static Pose punktImParcours;
 	
 	public static void main(String[] args) 
 	{
@@ -40,6 +41,7 @@ public class Daisy
 		{
 			daisyInit.pilot.forward();
 			aktuellerPkt = poser.getPose();
+			//daisyInit.pilot.setRotateSpeed( 30 );
 			
 			do
 			{
@@ -60,7 +62,7 @@ public class Daisy
 					while(daisyInit.pilot.isMoving())
 					{
 						distMessung=daisyInit.sonicSensor.getDistance();
-						if(distMessung <= 21)
+						if(distMessung <= 20)
 						{
 							daisyInit.pilot.stop();
 							daisyInit.pilot.rotate(5);
@@ -83,7 +85,7 @@ public class Daisy
 					while(daisyInit.pilot.isMoving())
 					{
 						distMessung=daisyInit.sonicSensor.getDistance();
-						if(distMessung <= 21)
+						if(distMessung <= 20)
 						{
 							daisyInit.pilot.stop();
 							daisyInit.pilot.rotate(-5);
@@ -117,23 +119,25 @@ public class Daisy
 				else
 					distMessung=daisyInit.sonicSensor.getDistance();
 				
-			}while ( distMessung > 21 && colors[1] == 6 && colors[0] != 1 && colors[2] != 1);
+			}while ( distMessung > 20 && colors[1] == 6 && colors[0] != 1 && colors[2] != 1);
 			
 			daisyInit.pilot.stop();
-
-			Sound.setVolume(100);
-			Sound.playSample(daisyInit.soundMGS, daisyInit.volume);	// spielt File ab mit max Lautstaerke	
-			Sound.setVolume(20);
+			//daisyInit.pilot.setRotateSpeed( daisyInit.spinSpeed );
 			
-			if(distMessung <= 21)
+			
+			if(distMessung <= 20)
 			{
+				Sound.setVolume(100);
+				Sound.playSample(daisyInit.soundMGS, daisyInit.volume);	// spielt File ab mit max Lautstaerke	
+				Sound.setVolume(20);
+				
 				distanzen = objScanner.scanObject(distMessung);
 				art = objScanner.whatKind(distanzen);
 				motors.avoidNearObj( art , distanzen );	
 			}
 			else
 			{
-				if( colorSens.checkColor(colors[1]) == 7 )
+				if( colorSens.checkColor(colors[1]) != 6 )
 				{
 					sector.setSector((int)poser.getPose().getX() / 25, (int)poser.getPose().getY() / 25, true);
 					colorSens.checkTrack();

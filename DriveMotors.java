@@ -164,25 +164,25 @@ public class DriveMotors
 	
 	//----------------------------------------------------------------------
 
-	void driveBack()
+	void driveBack(float x, float y, float heading)
 	{
 		Random ran = new Random();
 		int turn = ran.nextInt(2);
-		
-		Daisy.nav.goTo(0, 0);
+				
+		Daisy.nav.goTo(x, y);
 		while(!Daisy.nav.pathCompleted())// && Daisy.daisyInit.pilot.isMoving())
 		{
-			if(Daisy.daisyInit.sonicSensor.getDistance() < 22 )
+			if(Daisy.daisyInit.sonicSensor.getDistance() < 19 )
 			{
 				Daisy.daisyInit.pilot.stop();
 				Daisy.daisyInit.pilot.rotate( Math.pow(-1, turn) * 90);
 				Daisy.daisyInit.pilot.travel(20);
 
-				Daisy.nav.goTo(0, 0);
+				Daisy.nav.goTo(x, y);
 			}
 		}
 		
-		Daisy.daisyInit.pilot.rotate(- Daisy.poser.getPose().getHeading());
+		Daisy.daisyInit.pilot.rotate(heading - Daisy.poser.getPose().getHeading());
 		
 	}
 	

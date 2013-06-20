@@ -37,6 +37,7 @@ public class Initialize
 	
 	//Soundfile
 	public final File soundMGS = new File("soundMGS.wav");
+	public final File sound1UP = new File("sound1UP.wav");
 	
 
 	
